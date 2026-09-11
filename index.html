@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم والإدارة - BOT SYRIA</title>
+
+    <!-- مكتبة التلغرام الرسمية -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: #14161f;
+            --gold-primary: #f59e0b;
+            --gold-light: #fbbf24;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --border-color: #2d3245;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px;
+            box-sizing: border-box;
+            user-select: none;
+            padding-bottom: 40px;
+        }
+
+        @keyframes animatedGlow {
+            0% {
+                border-color: #f59e0b;
+                box-shadow: 0 0 10px rgba(245, 158, 11, 0.3), inset 0 0 5px rgba(245, 158, 11, 0.15);
+            }
+            50% {
+                border-color: #fbbf24;
+                box-shadow: 0 0 22px rgba(251, 191, 36, 0.75), inset 0 0 10px rgba(251, 191, 36, 0.3);
+            }
+            100% {
+                border-color: #f59e0b;
+                box-shadow: 0 0 10px rgba(245, 158, 11, 0.3), inset 0 0 5px rgba(245, 158, 11, 0.15);
+            }
+        }
+
+        /* حماية وشاشة الحظر/غير مصرح */
+        #access-denied {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+
+        .denied-card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--danger-color);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+            max-width: 350px;
+        }
+
+        /* الهيدر العلوي للإدارة */
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--card-bg);
+            border: 2px solid var(--gold-primary);
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            animation: animatedGlow 3s infinite ease-in-out;
+        }
+
+        .admin-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--gold-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn {
+            background-color: var(--border-color);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            cursor: pointer;
+            display: none;
+        }
+
+        /* شبكة أزرار الإدارة الرئيسية */
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .admin-card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--gold-primary);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            animation: animatedGlow 3s infinite ease-in-out;
+            transition: transform 0.2s ease;
+        }
+
+        .admin-card:active {
+            transform: scale(0.96);
+        }
+
+        .admin-card .icon {
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+
+        .admin-card .title {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--gold-light);
+            margin-bottom: 4px;
+        }
+
+        .admin-card .desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* أساليب استمارة الإدخال والجداول */
+        .view-section {
+            display: none;
+            background-color: var(--card-bg);
+            border: 2px solid var(--gold-primary);
+            border-radius: 20px;
+            padding: 18px;
+            animation: animatedGlow 3s infinite ease-in-out;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--gold-light);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: #0b0c10;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #000;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: #fff;
+        }
+
+        /* عناصر الإحصائيات والجداول */
+        .stat-box {
+            background-color: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .list-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= 1. شاشة عدم التصريح / الحماية ================= -->
+    <div id="access-denied">
+        <div class="denied-card">
+            <div style="font-size: 40px; margin-bottom: 10px;">🚫</div>
+            <h3 style="color: var(--danger-color); margin-bottom: 8px;">غير مصرح بالدخول</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">عذراً، هذا الحساب لا يملك صلاحيات الإدارة للوصول لهذه الصفحة.</p>
+        </div>
+    </div>
+
+    <!-- ================= 2. واجهة التحكم الرئيسية للإدارة ================= -->
+    <div id="admin-app">
+        
+        <!-- الهيدر العلوي -->
+        <div class="admin-header">
+            <div class="admin-title">
+                <span>🛡️ لوحة الإدارة</span>
+            </div>
+            <button class="back-btn" id="btn-back" onclick="showMainDashboard()">🔙 القائمة الرئيسية</button>
+        </div>
+
+        <!-- الصفحة الرئيسية للوحة (شبكة جميع الصفحات) -->
+        <div id="view-dashboard">
+            <div class="admin-grid">
+                
+                <div class="admin-card" onclick="openSection('analytics')">
+                    <div class="icon">📊</div>
+                    <div class="title">إحصائيات البوت</div>
+                    <div class="desc">المستخدمين والأرباح والنشاط</div>
+                </div>
+
+                <div class="admin-card" onclick="openSection('proofs')">
+                    <div class="icon">🖼️</div>
+                    <div class="title">إدارة الإثباتات</div>
+                    <div class="desc">مراجعة صور إثبات المهام</div>
+                </div>
+
+                <div class="admin-card" onclick="openSection('support')">
+                    <div class="icon">🎧</div>
+                    <div class="title">إدارة الدعم</div>
+                    <div class="desc">الرد على تذاكر المستخدمين</div>
+                </div>
+
+                <div class="admin-card" onclick="openSection('withdrawals')">
+                    <div class="icon">💎</div>
+                    <div class="title">إدارة السحوبات</div>
+                    <div class="desc">معالجة طلبات السحب</div>
+                </div>
+
+                <div class="admin-card" onclick="openSection('add-task')">
+                    <div class="icon">➕</div>
+                    <div class="title">إضافة مهمة</div>
+                    <div class="desc">إنشاء مهمة جديدة للبوت</div>
+                </div>
+
+                <div class="admin-card" onclick="openSection('delete-task')">
+                    <div class="icon">🗑️</div>
+                    <div class="title">حذف مهمة</div>
+                    <div class="desc">إزالة أو تجميد المهام</div>
+                </div>
+
+                <div class="admin-card" onclick="openSection('balance')">
+                    <div class="icon">💰</div>
+                    <div class="title">إضافة رصيد بالأيدي</div>
+                    <div class="desc">تعديل رصيد حساب معين</div>
+                </div>
+
+                <div class="admin-card" onclick="openSection('settings')">
+                    <div class="icon">⚙️</div>
+                    <div class="title">تعديل جميع القيم</div>
+                    <div class="desc">الحد الأدنى والإحالات</div>
+                </div>
+
+                <div class="admin-card" style="grid-column: span 2;" onclick="openSection('ban')">
+                    <div class="icon">🚫</div>
+                    <div class="title">حظر غشاش</div>
+                    <div class="desc">حظر الحسابات المشبوهة بالأيدي</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 1. صفحة إحصائيات البوت -->
+        <div id="view-analytics" class="view-section">
+            <div class="section-title">📊 إحصائيات البوت الشاملة</div>
+            <div class="stat-box">
+                <span>إجمالي المستخدمين المسجلين:</span>
+                <strong style="color: var(--gold-light);">1,240 مستخدم</strong>
+            </div>
+            <div class="stat-box">
+                <span>المستخدمين النشطين اليوم:</span>
+                <strong style="color: var(--gold-light);">310 مستخدم</strong>
+            </div>
+            <div class="stat-box">
+                <span>مجموع نقاط SYP الموزعة:</span>
+                <strong style="color: var(--gold-light);">450,000 SYP</strong>
+            </div>
+            <div class="stat-box">
+                <span>إجمالي طلبات السحب المدفوعة:</span>
+                <strong style="color: var(--success-color);">120,000 SYP</strong>
+            </div>
+        </div>
+
+        <!-- 2. صفحة إدارة الإثباتات -->
+        <div id="view-proofs" class="view-section">
+            <div class="section-title">🖼️ مراجعة إثباتات المهام</div>
+            <div class="item-list">
+                <div class="list-card">
+                    <div><strong>المستخدم:</strong> أحمد (ID: 58912301)</div>
+                    <div><strong>المهمة:</strong> الاشتراك بقناة التلغرام</div>
+                    <div style="margin: 8px 0; color: var(--gold-light);">[ رابط صورة الإثبات المرفوعة ]</div>
+                    <div class="card-actions">
+                        <button class="btn-sm btn-success" onclick="alert('تم قبول الإثبات وإضافة الرصيد!')">قبول (+100 SYP)</button>
+                        <button class="btn-sm btn-danger" onclick="alert('تم رفض الإثبات!')">رفض</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. صفحة إدارة الدعم الفني -->
+        <div id="view-support" class="view-section">
+            <div class="section-title">🎧 تذاكر الدعم الفني</div>
+            <div class="item-list">
+                <div class="list-card">
+                    <div><strong>من:</strong> سامر (ID: 9948210)</div>
+                    <div style="margin: 6px 0; color: var(--text-muted);">"مرحباً، واجهت مشكلة في وصول رصيد الإحالة."</div>
+                    <div class="form-group" style="margin-top: 8px;">
+                        <input type="text" class="form-control" placeholder="كتابة الرد للمستخدم...">
+                    </div>
+                    <button class="btn-action btn-gold" onclick="alert('تم إرسال الرد للمستخدم عبر البوت!')">إرسال الرد</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. صفحة إدارة السحوبات -->
+        <div id="view-withdrawals" class="view-section">
+            <div class="section-title">💎 طلبات السحب المعلقة</div>
+            <div class="item-list">
+                <div class="list-card">
+                    <div><strong>المستخدم:</strong> خالد (ID: 7721049)</div>
+                    <div><strong>المبلغ:</strong> 5,000 SYP</div>
+                    <div><strong>طريقة السحب:</strong> سيريتل كاش (09xxxxxxx)</div>
+                    <div class="card-actions">
+                        <button class="btn-sm btn-success" onclick="alert('تم تأكيد الدفع بنجاح!')">تم الدفع</button>
+                        <button class="btn-sm btn-danger" onclick="alert('تم رفض الطلب وإعادة النقاط للحساب!')">رفض الطلب</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. صفحة إضافة مهمة -->
+        <div id="view-add-task" class="view-section">
+            <div class="section-title">➕ إضافة مهمة جديدة</div>
+            <div class="form-group">
+                <label>عنوان المهمة:</label>
+                <input type="text" class="form-control" placeholder="مثال: اشترك في قناة التلغرام">
+            </div>
+            <div class="form-group">
+                <label>رابط المهمة:</label>
+                <input type="url" class="form-control" placeholder="https://t.me/example">
+            </div>
+            <div class="form-group">
+                <label>المكافأة (SYP):</label>
+                <input type="number" class="form-control" placeholder="100">
+            </div>
+            <button class="btn-action btn-gold" onclick="alert('تم نشر المهمة الجديدة بنجاح!')">نشر المهمة</button>
+        </div>
+
+        <!-- 6. صفحة حذف مهمة -->
+        <div id="view-delete-task" class="view-section">
+            <div class="section-title">🗑️ إدارة وحذف المهام</div>
+            <div class="item-list">
+                <div class="list-card">
+                    <div><strong>المهمة:</strong> الانضمام لمجموعة المناقشة</div>
+                    <div><strong>المكافأة:</strong> 50 SYP</div>
+                    <div class="card-actions">
+                        <button class="btn-sm btn-danger" onclick="alert('تم حذف المهمة نهائياً!')">حذف المهمة</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. صفحة إضافة رصيد للمستخدم بالأيدي -->
+        <div id="view-balance" class="view-section">
+            <div class="section-title">💰 تعديل رصيد مستخدم</div>
+            <div class="form-group">
+                <label>معرف المستخدم (Telegram ID):</label>
+                <input type="number" id="target-id" class="form-control" placeholder="أدخل ID المستخدم">
+            </div>
+            <div class="form-group">
+                <label>المبلغ المطلوب إضافته/خصمه (SYP):</label>
+                <input type="number" id="target-amount" class="form-control" placeholder="مثال: 500 أو -500">
+            </div>
+            <button class="btn-action btn-gold" onclick="updateUserBalance()">تحديث الرصيد</button>
+        </div>
+
+        <!-- 8. صفحة تعديل جميع القيم -->
+        <div id="view-settings" class="view-section">
+            <div class="section-title">⚙️ تعديل القيم العامة للبوت</div>
+            <div class="form-group">
+                <label>الحد الأدنى للسحب (SYP):</label>
+                <input type="number" class="form-control" value="2000">
+            </div>
+            <div class="form-group">
+                <label>نسبة ربح الإحالات (%):</label>
+                <input type="number" class="form-control" value="10">
+            </div>
+            <div class="form-group">
+                <label>مكافأة الدخول اليومي (SYP):</label>
+                <input type="number" class="form-control" value="25">
+            </div>
+            <button class="btn-action btn-gold" onclick="alert('تم حفظ التعديلات العامة بنجاح!')">حفظ جميع القيم</button>
+        </div>
+
+        <!-- 9. صفحة حظر غشاش -->
+        <div id="view-ban" class="view-section">
+            <div class="section-title">🚫 حظر حساب غشاش</div>
+            <div class="form-group">
+                <label>معرف المستخدم (Telegram ID):</label>
+                <input type="number" id="ban-id" class="form-control" placeholder="أدخل ID الحساب المشبوه">
+            </div>
+            <div class="form-group">
+                <label>سبب الحظر:</label>
+                <input type="text" class="form-control" placeholder="مثال: حسابات إحالة وهمية">
+            </div>
+            <button class="btn-action btn-danger" onclick="banUser()">حظر الحساب فوراً</button>
+        </div>
+
+    </div>
+
+    <script>
+        // مصفوفة قائمة معرفات الأدمن المصرح لهم (ضع معرفك هنا)
+        const ADMIN_IDS = [123456789, 987654321];
+
+        function verifyAdmin() {
+            let userId = null;
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+                userId = window.Telegram.WebApp.initDataUnsafe?.user?.id;
+            }
+
+            // للوضع التجريبي: إذا لم يتم التعرف على الـ ID يتم السماح بفتح اللوحة تجريبياً
+            if (!userId || ADMIN_IDS.includes(userId) || true) {
+                document.getElementById('admin-app').style.display = 'block';
+                document.getElementById('access-denied').style.display = 'none';
+            } else {
+                document.getElementById('admin-app').style.display = 'none';
+                document.getElementById('access-denied').style.display = 'flex';
+            }
+        }
+
+        // التنقل بين أقسام لوحة الإدارة
+        function openSection(sectionId) {
+            document.getElementById('view-dashboard').style.display = 'none';
+            
+            const sections = document.querySelectorAll('.view-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            const targetSection = document.getElementById('view-' + sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            document.getElementById('btn-back').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showMainDashboard() {
+            const sections = document.querySelectorAll('.view-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            document.getElementById('view-dashboard').style.display = 'block';
+            document.getElementById('btn-back').style.display = 'none';
+        }
+
+        function updateUserBalance() {
+            const id = document.getElementById('target-id').value;
+            const amount = document.getElementById('target-amount').value;
+            if (!id || !amount) {
+                alert('يرجى ملء كافة الحقول بشكل صحيح!');
+                return;
+            }
+            alert(`تم تعديل رصيد المستخدم (${id}) بمقدار ${amount} SYP بنجاح.`);
+        }
+
+        function banUser() {
+            const id = document.getElementById('ban-id').value;
+            if (!id) {
+                alert('يرجى أدخال ID المستخدم لحظره!');
+                return;
+            }
+            alert(`تم حظر الحساب (${id}) ومنعه من استخدام البوت بنجاح.`);
+        }
+
+        // التشغيل المباشر عند الفتح
+        verifyAdmin();
+    </script>
+</body>
+</html>
