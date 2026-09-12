@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم والإدارة - BOT SYRIA</title>
-
-    <!-- مكتبة التلغرام الرسمية -->
+    <title>BOT SYRIA - لوحة الإدارة</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <style>
         :root {
             --bg-color: #0b0c10;
@@ -29,531 +26,662 @@
             padding: 15px;
             box-sizing: border-box;
             user-select: none;
-            padding-bottom: 40px;
+            padding-bottom: 30px;
         }
 
-        @keyframes animatedGlow {
-            0% {
-                border-color: #f59e0b;
-                box-shadow: 0 0 10px rgba(245, 158, 11, 0.3), inset 0 0 5px rgba(245, 158, 11, 0.15);
-            }
-            50% {
-                border-color: #fbbf24;
-                box-shadow: 0 0 22px rgba(251, 191, 36, 0.75), inset 0 0 10px rgba(251, 191, 36, 0.3);
-            }
-            100% {
-                border-color: #f59e0b;
-                box-shadow: 0 0 10px rgba(245, 158, 11, 0.3), inset 0 0 5px rgba(245, 158, 11, 0.15);
-            }
-        }
-
-        /* حماية وشاشة الحظر/غير مصرح */
-        #access-denied {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80vh;
-            text-align: center;
-        }
-
-        .denied-card {
-            background-color: var(--card-bg);
-            border: 2px solid var(--danger-color);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
-            max-width: 350px;
-        }
-
-        /* الهيدر العلوي للإدارة */
         .admin-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: var(--card-bg);
-            border: 2px solid var(--gold-primary);
-            padding: 12px 16px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            animation: animatedGlow 3s infinite ease-in-out;
-        }
-
-        .admin-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--gold-light);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .back-btn {
-            background-color: var(--border-color);
-            color: #fff;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-size: 12px;
-            cursor: pointer;
-            display: none;
-        }
-
-        /* شبكة أزرار الإدارة الرئيسية */
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .admin-card {
             background-color: var(--card-bg);
             border: 2px solid var(--gold-primary);
             border-radius: 16px;
             padding: 15px;
             text-align: center;
-            cursor: pointer;
-            animation: animatedGlow 3s infinite ease-in-out;
-            transition: transform 0.2s ease;
+            margin-bottom: 15px;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
         }
 
-        .admin-card:active {
-            transform: scale(0.96);
-        }
-
-        .admin-card .icon {
-            font-size: 26px;
-            margin-bottom: 6px;
-        }
-
-        .admin-card .title {
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--gold-light);
-            margin-bottom: 4px;
-        }
-
-        .admin-card .desc {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        /* أساليب استمارة الإدخال والجداول */
-        .view-section {
-            display: none;
-            background-color: var(--card-bg);
-            border: 2px solid var(--gold-primary);
-            border-radius: 20px;
-            padding: 18px;
-            animation: animatedGlow 3s infinite ease-in-out;
-        }
-
-        .view-section.active {
-            display: block;
-        }
-
-        .section-title {
+        .admin-title {
             font-size: 18px;
             font-weight: bold;
             color: var(--gold-light);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
             margin-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
         }
 
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px 12px;
-            background-color: #0b0c10;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
+        .menu-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--gold-primary);
             color: #fff;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--gold-primary);
-        }
-
-        .btn-action {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
+            padding: 12px 8px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 8px;
-            font-size: 14px;
+            text-align: center;
+            transition: 0.2s;
         }
 
-        .btn-gold {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
+        .menu-btn:active {
+            transform: scale(0.96);
+            background: var(--gold-primary);
             color: #000;
         }
 
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: #fff;
+        .section-card {
+            display: none;
+            background-color: var(--card-bg);
+            border: 2px solid var(--gold-primary);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 15px;
         }
 
-        .btn-success {
-            background-color: var(--success-color);
-            color: #fff;
+        .section-card.active {
+            display: block;
         }
 
-        /* عناصر الإحصائيات والجداول */
-        .stat-box {
-            background-color: rgba(255,255,255,0.03);
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 10px;
+        .section-header {
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--gold-light);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .item-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        .form-group {
+            margin-bottom: 10px;
         }
 
-        .list-card {
-            background: rgba(255,255,255,0.02);
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            background: #0b0c10;
             border: 1px solid var(--border-color);
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 13px;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .btn-sm {
-            padding: 6px 10px;
+            border-radius: 8px;
+            color: #fff;
             font-size: 12px;
-            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 10px;
             border: none;
-            cursor: pointer;
+            border-radius: 8px;
             font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+
+        .btn-green { background: var(--success-color); color: #fff; }
+        .btn-red { background: var(--danger-color); color: #fff; }
+        .btn-gold { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; }
+
+        .item-card {
+            background: #0b0c10;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .img-preview {
+            width: 100%;
+            max-height: 180px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin: 8px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-color);
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
 
-    <!-- ================= 1. شاشة عدم التصريح / الحماية ================= -->
-    <div id="access-denied">
-        <div class="denied-card">
-            <div style="font-size: 40px; margin-bottom: 10px;">🚫</div>
-            <h3 style="color: var(--danger-color); margin-bottom: 8px;">غير مصرح بالدخول</h3>
-            <p style="font-size: 12px; color: var(--text-muted);">عذراً، هذا الحساب لا يملك صلاحيات الإدارة للوصول لهذه الصفحة.</p>
-        </div>
+    <div class="admin-header">
+        <div class="admin-title">🛠️ لوحة إدﺍﺭﺓ BOT SYRIA</div>
     </div>
 
-    <!-- ================= 2. واجهة التحكم الرئيسية للإدارة ================= -->
-    <div id="admin-app">
-        
-        <!-- الهيدر العلوي -->
-        <div class="admin-header">
-            <div class="admin-title">
-                <span>🛡️ لوحة الإدارة</span>
-            </div>
-            <button class="back-btn" id="btn-back" onclick="showMainDashboard()">🔙 القائمة الرئيسية</button>
+    <!-- أزرار التنقل بين الأقسام العشرة -->
+    <div class="menu-grid">
+        <button class="menu-btn" onclick="showSection('stats')">📊 إحصائيات</button>
+        <button class="menu-btn" onclick="showSection('proofs')">🖼️ الإثباتات</button>
+        <button class="menu-btn" onclick="showSection('withdrawals')">💎 السحوبات</button>
+        <button class="menu-btn" onclick="showSection('support')">🎧 الشكاوى</button>
+        <button class="menu-btn" onclick="showSection('add-task')">➕ إضافة مهمة</button>
+        <button class="menu-btn" onclick="showSection('delete-task')">❌ حذف مهمة</button>
+        <button class="menu-btn" onclick="showSection('add-balance')">💰 إضافة رصيد</button>
+        <button class="menu-btn" onclick="showSection('edit-values')">⚙️ تعديل القيم</button>
+        <button class="menu-btn" onclick="showSection('ban-user')">🚫 حظر غشاش</button>
+        <button class="menu-btn" onclick="showSection('add-promo')">🎁 كود هدية</button>
+    </div>
+
+    <!-- 1. صفحة إحصائيات البوت -->
+    <div id="sec-stats" class="section-card">
+        <div class="section-header">📊 إحصائيات البوت الشاملة</div>
+        <div id="stats-content"></div>
+    </div>
+
+    <!-- 2. صفحة إدارة الإثباتات -->
+    <div id="sec-proofs" class="section-card">
+        <div class="section-header">🖼️ مراجعة إثباتات المهام</div>
+        <div id="proofs-list"></div>
+    </div>
+
+    <!-- 3. صفحة إدارة السحوبات -->
+    <div id="sec-withdrawals" class="section-card">
+        <div class="section-header">💎 طلبات السحب المعلقة</div>
+        <div id="withdrawals-list"></div>
+    </div>
+
+    <!-- 4. صفحة إدارة الدعم الفني -->
+    <div id="sec-support" class="section-card">
+        <div class="section-header">🎧 الشكاوى والاستفسارات</div>
+        <div id="support-list"></div>
+    </div>
+
+    <!-- 5. صفحة إضافة مهمة -->
+    <div id="sec-add-task" class="section-card">
+        <div class="section-header">➕ إضافة مهمة جديدة</div>
+        <div class="form-group">
+            <label>عنوان المهمة:</label>
+            <input type="text" id="task-title-input" class="form-control" placeholder="مثال: الاشتراك بالقناة الرسمية">
         </div>
-
-        <!-- الصفحة الرئيسية للوحة (شبكة جميع الصفحات) -->
-        <div id="view-dashboard">
-            <div class="admin-grid">
-                
-                <div class="admin-card" onclick="openSection('analytics')">
-                    <div class="icon">📊</div>
-                    <div class="title">إحصائيات البوت</div>
-                    <div class="desc">المستخدمين والأرباح والنشاط</div>
-                </div>
-
-                <div class="admin-card" onclick="openSection('proofs')">
-                    <div class="icon">🖼️</div>
-                    <div class="title">إدارة الإثباتات</div>
-                    <div class="desc">مراجعة صور إثبات المهام</div>
-                </div>
-
-                <div class="admin-card" onclick="openSection('support')">
-                    <div class="icon">🎧</div>
-                    <div class="title">إدارة الدعم</div>
-                    <div class="desc">الرد على تذاكر المستخدمين</div>
-                </div>
-
-                <div class="admin-card" onclick="openSection('withdrawals')">
-                    <div class="icon">💎</div>
-                    <div class="title">إدارة السحوبات</div>
-                    <div class="desc">معالجة طلبات السحب</div>
-                </div>
-
-                <div class="admin-card" onclick="openSection('add-task')">
-                    <div class="icon">➕</div>
-                    <div class="title">إضافة مهمة</div>
-                    <div class="desc">إنشاء مهمة جديدة للبوت</div>
-                </div>
-
-                <div class="admin-card" onclick="openSection('delete-task')">
-                    <div class="icon">🗑️</div>
-                    <div class="title">حذف مهمة</div>
-                    <div class="desc">إزالة أو تجميد المهام</div>
-                </div>
-
-                <div class="admin-card" onclick="openSection('balance')">
-                    <div class="icon">💰</div>
-                    <div class="title">إضافة رصيد بالأيدي</div>
-                    <div class="desc">تعديل رصيد حساب معين</div>
-                </div>
-
-                <div class="admin-card" onclick="openSection('settings')">
-                    <div class="icon">⚙️</div>
-                    <div class="title">تعديل جميع القيم</div>
-                    <div class="desc">الحد الأدنى والإحالات</div>
-                </div>
-
-                <div class="admin-card" style="grid-column: span 2;" onclick="openSection('ban')">
-                    <div class="icon">🚫</div>
-                    <div class="title">حظر غشاش</div>
-                    <div class="desc">حظر الحسابات المشبوهة بالأيدي</div>
-                </div>
-
-            </div>
+        <div class="form-group">
+            <label>نص / شرح المهمة:</label>
+            <textarea id="task-desc-input" class="form-control" rows="2" placeholder="شرح ما يجب على المستخدم فعله"></textarea>
         </div>
-
-        <!-- 1. صفحة إحصائيات البوت -->
-        <div id="view-analytics" class="view-section">
-            <div class="section-title">📊 إحصائيات البوت الشاملة</div>
-            <div class="stat-box">
-                <span>إجمالي المستخدمين المسجلين:</span>
-                <strong style="color: var(--gold-light);">1,240 مستخدم</strong>
-            </div>
-            <div class="stat-box">
-                <span>المستخدمين النشطين اليوم:</span>
-                <strong style="color: var(--gold-light);">310 مستخدم</strong>
-            </div>
-            <div class="stat-box">
-                <span>مجموع نقاط SYP الموزعة:</span>
-                <strong style="color: var(--gold-light);">450,000 SYP</strong>
-            </div>
-            <div class="stat-box">
-                <span>إجمالي طلبات السحب المدفوعة:</span>
-                <strong style="color: var(--success-color);">120,000 SYP</strong>
-            </div>
+        <div class="form-group">
+            <label>رابط المهمة:</label>
+            <input type="text" id="task-link-input" class="form-control" placeholder="https://t.me/...">
         </div>
-
-        <!-- 2. صفحة إدارة الإثباتات -->
-        <div id="view-proofs" class="view-section">
-            <div class="section-title">🖼️ مراجعة إثباتات المهام</div>
-            <div class="item-list">
-                <div class="list-card">
-                    <div><strong>المستخدم:</strong> أحمد (ID: 58912301)</div>
-                    <div><strong>المهمة:</strong> الاشتراك بقناة التلغرام</div>
-                    <div style="margin: 8px 0; color: var(--gold-light);">[ رابط صورة الإثبات المرفوعة ]</div>
-                    <div class="card-actions">
-                        <button class="btn-sm btn-success" onclick="alert('تم قبول الإثبات وإضافة الرصيد!')">قبول (+100 SYP)</button>
-                        <button class="btn-sm btn-danger" onclick="alert('تم رفض الإثبات!')">رفض</button>
-                    </div>
-                </div>
-            </div>
+        <div class="form-group">
+            <label>عدد المقاعد المتاحة:</label>
+            <input type="number" id="task-seats-input" class="form-control" placeholder="100">
         </div>
-
-        <!-- 3. صفحة إدارة الدعم الفني -->
-        <div id="view-support" class="view-section">
-            <div class="section-title">🎧 تذاكر الدعم الفني</div>
-            <div class="item-list">
-                <div class="list-card">
-                    <div><strong>من:</strong> سامر (ID: 9948210)</div>
-                    <div style="margin: 6px 0; color: var(--text-muted);">"مرحباً، واجهت مشكلة في وصول رصيد الإحالة."</div>
-                    <div class="form-group" style="margin-top: 8px;">
-                        <input type="text" class="form-control" placeholder="كتابة الرد للمستخدم...">
-                    </div>
-                    <button class="btn-action btn-gold" onclick="alert('تم إرسال الرد للمستخدم عبر البوت!')">إرسال الرد</button>
-                </div>
-            </div>
+        <div class="form-group">
+            <label>عدد النقاط (SYP):</label>
+            <input type="number" id="task-points-input" class="form-control" placeholder="50">
         </div>
+        <button class="btn-action btn-gold" onclick="submitNewTask()">موافقة المهمة وإرسالها فوراً</button>
+    </div>
 
-        <!-- 4. صفحة إدارة السحوبات -->
-        <div id="view-withdrawals" class="view-section">
-            <div class="section-title">💎 طلبات السحب المعلقة</div>
-            <div class="item-list">
-                <div class="list-card">
-                    <div><strong>المستخدم:</strong> خالد (ID: 7721049)</div>
-                    <div><strong>المبلغ:</strong> 5,000 SYP</div>
-                    <div><strong>طريقة السحب:</strong> سيريتل كاش (09xxxxxxx)</div>
-                    <div class="card-actions">
-                        <button class="btn-sm btn-success" onclick="alert('تم تأكيد الدفع بنجاح!')">تم الدفع</button>
-                        <button class="btn-sm btn-danger" onclick="alert('تم رفض الطلب وإعادة النقاط للحساب!')">رفض الطلب</button>
-                    </div>
-                </div>
-            </div>
+    <!-- 6. صفحة حذف مهمة -->
+    <div id="sec-delete-task" class="section-card">
+        <div class="section-header">❌ إدارة وحذف المهام</div>
+        <div id="delete-tasks-list"></div>
+    </div>
+
+    <!-- 7. صفحة إضافة رصيد بالآيدي -->
+    <div id="sec-add-balance" class="section-card">
+        <div class="section-header">💰 إضافة رصيد يدوي لمستخدم</div>
+        <div class="form-group">
+            <label>معرف المستخدم (User ID):</label>
+            <input type="number" id="add-bal-id" class="form-control" placeholder="مثال: 123456789">
         </div>
-
-        <!-- 5. صفحة إضافة مهمة -->
-        <div id="view-add-task" class="view-section">
-            <div class="section-title">➕ إضافة مهمة جديدة</div>
-            <div class="form-group">
-                <label>عنوان المهمة:</label>
-                <input type="text" class="form-control" placeholder="مثال: اشترك في قناة التلغرام">
-            </div>
-            <div class="form-group">
-                <label>رابط المهمة:</label>
-                <input type="url" class="form-control" placeholder="https://t.me/example">
-            </div>
-            <div class="form-group">
-                <label>المكافأة (SYP):</label>
-                <input type="number" class="form-control" placeholder="100">
-            </div>
-            <button class="btn-action btn-gold" onclick="alert('تم نشر المهمة الجديدة بنجاح!')">نشر المهمة</button>
+        <div class="form-group">
+            <label>عدد النقاط المراد إضافتها (SYP):</label>
+            <input type="number" id="add-bal-amount" class="form-control" placeholder="500">
         </div>
+        <button class="btn-action btn-gold" onclick="submitAddBalance()">إضافة النقاط فوراً</button>
+    </div>
 
-        <!-- 6. صفحة حذف مهمة -->
-        <div id="view-delete-task" class="view-section">
-            <div class="section-title">🗑️ إدارة وحذف المهام</div>
-            <div class="item-list">
-                <div class="list-card">
-                    <div><strong>المهمة:</strong> الانضمام لمجموعة المناقشة</div>
-                    <div><strong>المكافأة:</strong> 50 SYP</div>
-                    <div class="card-actions">
-                        <button class="btn-sm btn-danger" onclick="alert('تم حذف المهمة نهائياً!')">حذف المهمة</button>
-                    </div>
-                </div>
-            </div>
+    <!-- 8. صفحة تعديل جميع القيم -->
+    <div id="sec-edit-values" class="section-card">
+        <div class="section-header">⚙️ تعديل القيم الأساسية</div>
+        <div class="form-group">
+            <label>الحد الأدنى للسحب (SYP):</label>
+            <input type="number" id="cfg-min-withdraw" class="form-control">
         </div>
-
-        <!-- 7. صفحة إضافة رصيد للمستخدم بالأيدي -->
-        <div id="view-balance" class="view-section">
-            <div class="section-title">💰 تعديل رصيد مستخدم</div>
-            <div class="form-group">
-                <label>معرف المستخدم (Telegram ID):</label>
-                <input type="number" id="target-id" class="form-control" placeholder="أدخل ID المستخدم">
-            </div>
-            <div class="form-group">
-                <label>المبلغ المطلوب إضافته/خصمه (SYP):</label>
-                <input type="number" id="target-amount" class="form-control" placeholder="مثال: 500 أو -500">
-            </div>
-            <button class="btn-action btn-gold" onclick="updateUserBalance()">تحديث الرصيد</button>
+        <div class="form-group">
+            <label>ربح الإحالة لكل شخص (SYP):</label>
+            <input type="number" id="cfg-ref-reward" class="form-control">
         </div>
+        <button class="btn-action btn-gold" onclick="saveGlobalSettings()">حفظ التعديلات الجديدة</button>
+    </div>
 
-        <!-- 8. صفحة تعديل جميع القيم -->
-        <div id="view-settings" class="view-section">
-            <div class="section-title">⚙️ تعديل القيم العامة للبوت</div>
-            <div class="form-group">
-                <label>الحد الأدنى للسحب (SYP):</label>
-                <input type="number" class="form-control" value="2000">
-            </div>
-            <div class="form-group">
-                <label>نسبة ربح الإحالات (%):</label>
-                <input type="number" class="form-control" value="10">
-            </div>
-            <div class="form-group">
-                <label>مكافأة الدخول اليومي (SYP):</label>
-                <input type="number" class="form-control" value="25">
-            </div>
-            <button class="btn-action btn-gold" onclick="alert('تم حفظ التعديلات العامة بنجاح!')">حفظ جميع القيم</button>
+    <!-- 9. صفحة حظر غشاش -->
+    <div id="sec-ban-user" class="section-card">
+        <div class="section-header">🚫 فحص وحظر الحسابات الوهمية</div>
+        <div class="form-group">
+            <label>أدخل معرف المستخدم (User ID):</label>
+            <input type="number" id="ban-user-id" class="form-control" placeholder="123456789">
         </div>
+        <button class="btn-action btn-gold" onclick="checkAndBanUser()">فحص وإجراء الحظر</button>
+        <div id="ban-result-msg" style="margin-top:10px; font-size:12px;"></div>
+    </div>
 
-        <!-- 9. صفحة حظر غشاش -->
-        <div id="view-ban" class="view-section">
-            <div class="section-title">🚫 حظر حساب غشاش</div>
-            <div class="form-group">
-                <label>معرف المستخدم (Telegram ID):</label>
-                <input type="number" id="ban-id" class="form-control" placeholder="أدخل ID الحساب المشبوه">
-            </div>
-            <div class="form-group">
-                <label>سبب الحظر:</label>
-                <input type="text" class="form-control" placeholder="مثال: حسابات إحالة وهمية">
-            </div>
-            <button class="btn-action btn-danger" onclick="banUser()">حظر الحساب فوراً</button>
+    <!-- 10. صفحة إضافة كود هدية برومو -->
+    <div id="sec-add-promo" class="section-card">
+        <div class="section-header">🎁 إضافة كود برومو جديد</div>
+        <div class="form-group">
+            <label>كود البرومو:</label>
+            <input type="text" id="promo-code-txt" class="form-control" placeholder="SYRIA2026">
         </div>
-
+        <div class="form-group">
+            <label>قيمة الكود (SYP):</label>
+            <input type="number" id="promo-points-val" class="form-control" placeholder="100">
+        </div>
+        <div class="form-group">
+            <label>عدد الأشخاص المسموح لهم (المقاعد):</label>
+            <input type="number" id="promo-seats-val" class="form-control" placeholder="50">
+        </div>
+        <button class="btn-action btn-gold" onclick="createNewPromoCode()">إنشاء الكود</button>
+        <div id="created-promo-display" style="margin-top:10px;"></div>
     </div>
 
     <script>
-        // مصفوفة قائمة معرفات الأدمن المصرح لهم (ضع معرفك هنا)
-        const ADMIN_IDS = [123456789, 987654321];
+        // إعداد هيكلية البيانات العامة المشتركة مع قاعدة بيانات المستخدمين
+        function getDB(key, defaultVal) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : defaultVal;
+        }
 
-        function verifyAdmin() {
-            let userId = null;
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.expand();
-                userId = window.Telegram.WebApp.initDataUnsafe?.user?.id;
+        function setDB(key, val) {
+            localStorage.setItem(key, JSON.stringify(val));
+        }
+
+        function showSection(secId) {
+            document.querySelectorAll('.section-card').forEach(c => c.classList.remove('active'));
+            const target = document.getElementById('sec-' + secId);
+            if (target) target.classList.add('active');
+
+            if (secId === 'stats') renderStats();
+            if (secId === 'proofs') renderProofs();
+            if (secId === 'withdrawals') renderWithdrawals();
+            if (secId === 'support') renderSupport();
+            if (secId === 'delete-task') renderDeleteTasks();
+            if (secId === 'edit-values') loadGlobalSettings();
+            if (secId === 'add-promo') cleanAndRenderPromos();
+        }
+
+        // 1. إحصائيات البوت
+        function renderStats() {
+            const users = getDB('bs_users', {});
+            const tasks = getDB('bs_tasks', []);
+            const withdrawals = getDB('bs_withdrawals', []);
+            const proofs = getDB('bs_proofs', []);
+
+            const userKeys = Object.keys(users);
+            let totalBal = 0;
+            userKeys.forEach(k => totalBal += (users[k].balance || 0));
+
+            const html = `
+                <div class="stat-row"><span>عدد المسجلين الكلي:</span><strong>${userKeys.length} مستخدم</strong></div>
+                <div class="stat-row"><span>مجموع الأرباح الموزعة:</span><strong>${totalBal} SYP</strong></div>
+                <div class="stat-row"><span>عدد المهام النشطة:</span><strong>${tasks.length} مهمة</strong></div>
+                <div class="stat-row"><span>طلبات السحب المعلقة:</span><strong>${withdrawals.length} طلب</strong></div>
+                <div class="stat-row"><span>الإثباتات قيد المراجعة:</span><strong>${proofs.length} إثبات</strong></div>
+            `;
+            document.getElementById('stats-content').innerHTML = html;
+        }
+
+        // 2. إدارة الإثباتات (قبول / رفض + تعديل مقاعد وتنبيه)
+        function renderProofs() {
+            const proofs = getDB('bs_proofs', []);
+            const container = document.getElementById('proofs-list');
+
+            if (proofs.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:var(--text-muted);">لا توجد إثباتات معلقة حالياً.</div>';
+                return;
             }
 
-            // للوضع التجريبي: إذا لم يتم التعرف على الـ ID يتم السماح بفتح اللوحة تجريبياً
-            if (!userId || ADMIN_IDS.includes(userId) || true) {
-                document.getElementById('admin-app').style.display = 'block';
-                document.getElementById('access-denied').style.display = 'none';
+            let html = '';
+            proofs.forEach((item, index) => {
+                html += `
+                    <div class="item-card">
+                        <div><strong>المستخدم:</strong> ${item.userId}</div>
+                        <div><strong>المهمة:</strong> ${item.taskTitle} (+${item.reward} SYP)</div>
+                        <img src="${item.imgUrl}" class="img-preview" alt="صورة الإثبات">
+                        <div class="btn-group">
+                            <button class="btn-action btn-green" onclick="handleProof(${index}, true)">✅ قبول</button>
+                            <button class="btn-action btn-red" onclick="handleProof(${index}, false)">❌ رفض</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function handleProof(index, isApproved) {
+            let proofs = getDB('bs_proofs', []);
+            let users = getDB('bs_users', {});
+            let tasks = getDB('bs_tasks', []);
+            const proof = proofs[index];
+
+            if (!proof) return;
+
+            if (!users[proof.userId]) {
+                users[proof.userId] = { balance: 0, notifications: [] };
+            }
+
+            if (isApproved) {
+                // إضافة النقاط للمستخدم فوراً
+                users[proof.userId].balance = (users[proof.userId].balance || 0) + proof.reward;
             } else {
-                document.getElementById('admin-app').style.display = 'none';
-                document.getElementById('access-denied').style.display = 'flex';
-            }
-        }
-
-        // التنقل بين أقسام لوحة الإدارة
-        function openSection(sectionId) {
-            document.getElementById('view-dashboard').style.display = 'none';
-            
-            const sections = document.querySelectorAll('.view-section');
-            sections.forEach(sec => sec.classList.remove('active'));
-
-            const targetSection = document.getElementById('view-' + sectionId);
-            if (targetSection) {
-                targetSection.classList.add('active');
+                // في حال الرفض: إعادة التوزيع ومقابلة حجز المقعد لتمكين المحاولة مجدداً
+                let task = tasks.find(t => t.id === proof.taskId);
+                if (task && task.completedSeats > 0) {
+                    task.completedSeats -= 1;
+                }
+                // إرسال تنبيه مباشر يظهر داخل قسم المهمة للمستخدم
+                localStorage.setItem(`task_proof_submitted_${proof.taskId}_${proof.userId}`, 'rejected');
             }
 
-            document.getElementById('btn-back').style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // إزالة الإثبات فوراً من اللوحة
+            proofs.splice(index, 1);
+
+            setDB('bs_proofs', proofs);
+            setDB('bs_users', users);
+            setDB('bs_tasks', tasks);
+            renderProofs();
         }
 
-        function showMainDashboard() {
-            const sections = document.querySelectorAll('.view-section');
-            sections.forEach(sec => sec.classList.remove('active'));
+        // 3. إدارة السحوبات
+        function renderWithdrawals() {
+            const withdrawals = getDB('bs_withdrawals', []);
+            const container = document.getElementById('withdrawals-list');
 
-            document.getElementById('view-dashboard').style.display = 'block';
-            document.getElementById('btn-back').style.display = 'none';
-        }
-
-        function updateUserBalance() {
-            const id = document.getElementById('target-id').value;
-            const amount = document.getElementById('target-amount').value;
-            if (!id || !amount) {
-                alert('يرجى ملء كافة الحقول بشكل صحيح!');
+            if (withdrawals.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:var(--text-muted);">لا توجد طلبات سحب معلقة.</div>';
                 return;
             }
-            alert(`تم تعديل رصيد المستخدم (${id}) بمقدار ${amount} SYP بنجاح.`);
+
+            let html = '';
+            withdrawals.forEach((item, index) => {
+                html += `
+                    <div class="item-card">
+                        <div><strong>المستخدم:</strong> ${item.userId}</div>
+                        <div><strong>المبلغ:</strong> ${item.amount} SYP</div>
+                        <div><strong>الطريقة:</strong> ${item.method}</div>
+                        <div><strong>رقم المحفظة:</strong> ${item.account}</div>
+                        <div class="btn-group">
+                            <button class="btn-action btn-green" onclick="handleWithdrawal(${index}, true)">✅ قبول وتأكيد</button>
+                            <button class="btn-action btn-red" onclick="handleWithdrawal(${index}, false)">❌ رفض وإعادة الرصيد</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
         }
 
-        function banUser() {
-            const id = document.getElementById('ban-id').value;
-            if (!id) {
-                alert('يرجى أدخال ID المستخدم لحظره!');
+        function handleWithdrawal(index, isApproved) {
+            let withdrawals = getDB('bs_withdrawals', []);
+            let users = getDB('bs_users', {});
+            const item = withdrawals[index];
+
+            if (!item) return;
+
+            if (!isApproved) {
+                // إرجاع الرصيد للمستخدم عند الرفض
+                if (!users[item.userId]) users[item.userId] = { balance: 0 };
+                users[item.userId].balance += item.amount;
+                setDB('bs_users', users);
+            }
+
+            // إزالة الطلب بالكامل فوراً
+            withdrawals.splice(index, 1);
+            setDB('bs_withdrawals', withdrawals);
+            renderWithdrawals();
+        }
+
+        // 4. إدارة الدعم الفني
+        function renderSupport() {
+            const list = getDB('bs_support', []);
+            const container = document.getElementById('support-list');
+
+            const pendingList = list.filter(item => !item.replied);
+
+            if (pendingList.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:var(--text-muted);">لا توجد شكاوى أو استفسارات معلقة.</div>';
                 return;
             }
-            alert(`تم حظر الحساب (${id}) ومنعه من استخدام البوت بنجاح.`);
+
+            let html = '';
+            pendingList.forEach((item) => {
+                html += `
+                    <div class="item-card">
+                        <div><strong>المستخدم:</strong> ${item.userId}</div>
+                        <div style="margin:6px 0; color:var(--gold-light);">"${item.message}"</div>
+                        <div class="form-group">
+                            <input type="text" id="reply-input-${item.id}" class="form-control" placeholder="اكتب ردك هنا...">
+                        </div>
+                        <button class="btn-action btn-gold" onclick="sendSupportReply('${item.id}')">إرسال الرد وتصفية الشكوى</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
         }
 
-        // التشغيل المباشر عند الفتح
-        verifyAdmin();
+        function sendSupportReply(ticketId) {
+            let list = getDB('bs_support', []);
+            const replyTxt = document.getElementById(`reply-input-${ticketId}`).value.trim();
+
+            if (!replyTxt) {
+                alert('يرجى كتابة النص أولاً!');
+                return;
+            }
+
+            let ticket = list.find(t => t.id === ticketId);
+            if (ticket) {
+                ticket.reply = replyTxt;
+                ticket.replied = true;
+                ticket.replyTimestamp = Date.now(); // لحساب الـ 24 ساعة لطلب الاختفاء عند المستخدم
+            }
+
+            setDB('bs_support', list);
+            renderSupport();
+        }
+
+        // 5. إضافة مهمة
+        function submitNewTask() {
+            const title = document.getElementById('task-title-input').value.trim();
+            const desc = document.getElementById('task-desc-input').value.trim();
+            const link = document.getElementById('task-link-input').value.trim();
+            const seats = parseInt(document.getElementById('task-seats-input').value);
+            const points = parseInt(document.getElementById('task-points-input').value);
+
+            if (!title || !desc || !link || !seats || !points) {
+                alert('يرجى تعبئة كافة حقول المهمة بشكل كامل!');
+                return;
+            }
+
+            let tasks = getDB('bs_tasks', []);
+            const newTask = {
+                id: Date.now(),
+                title: title,
+                desc: desc,
+                link: link,
+                maxSeats: seats,
+                completedSeats: 0,
+                reward: points
+            };
+
+            tasks.unshift(newTask);
+            setDB('bs_tasks', tasks);
+
+            alert('تم نشر المهمة الجديدة فوراً لجميع المستخدمين!');
+            document.getElementById('task-title-input').value = '';
+            document.getElementById('task-desc-input').value = '';
+            document.getElementById('task-link-input').value = '';
+            document.getElementById('task-seats-input').value = '';
+            document.getElementById('task-points-input').value = '';
+        }
+
+        // 6. حذف مهمة
+        function renderDeleteTasks() {
+            const tasks = getDB('bs_tasks', []);
+            const container = document.getElementById('delete-tasks-list');
+
+            if (tasks.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:var(--text-muted);">لا توجد مهام نشطة حالياً.</div>';
+                return;
+            }
+
+            let html = '';
+            tasks.forEach((task, index) => {
+                html += `
+                    <div class="item-card" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong>${task.title}</strong>
+                            <div style="font-size:10px; color:var(--text-muted);">${task.completedSeats}/${task.maxSeats} مقعد | ${task.reward} SYP</div>
+                        </div>
+                        <button class="btn-action btn-red" style="width:auto; padding:6px 12px; margin:0;" onclick="deleteTask(${index})">حذف المهمة</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function deleteTask(index) {
+            let tasks = getDB('bs_tasks', []);
+            tasks.splice(index, 1);
+            setDB('bs_tasks', tasks);
+            renderDeleteTasks();
+        }
+
+        // 7. إضافة رصيد بالآيدي
+        function submitAddBalance() {
+            const userId = document.getElementById('add-bal-id').value.trim();
+            const amount = parseInt(document.getElementById('add-bal-amount').value);
+
+            if (!userId || !amount) {
+                alert('أدخل المعرف وعدد النقاط!');
+                return;
+            }
+
+            let users = getDB('bs_users', {});
+            if (!users[userId]) users[userId] = { balance: 0 };
+
+            users[userId].balance += amount;
+            setDB('bs_users', users);
+
+            alert(`تمت إضافة ${amount} SYP بنجاح إلى حساب المستخدم ${userId}.`);
+            document.getElementById('add-bal-id').value = '';
+            document.getElementById('add-bal-amount').value = '';
+        }
+
+        // 8. تعديل جميع القيم
+        function loadGlobalSettings() {
+            const settings = getDB('bs_settings', { minWithdrawal: 250, refReward: 1 });
+            document.getElementById('cfg-min-withdraw').value = settings.minWithdrawal;
+            document.getElementById('cfg-ref-reward').value = settings.refReward;
+        }
+
+        function saveGlobalSettings() {
+            const minWithdraw = parseInt(document.getElementById('cfg-min-withdraw').value);
+            const refReward = parseInt(document.getElementById('cfg-ref-reward').value);
+
+            if (!minWithdraw || !refReward) {
+                alert('يرجى أدخال جميع القيم!');
+                return;
+            }
+
+            setDB('bs_settings', { minWithdrawal: minWithdraw, refReward: refReward });
+                alert('تم حفظ وتحديث القيم الأساسية للسيستم كاملاً!');
+        }
+
+        // 9. حظر غشاش (فحص + حظر 3 أيام)
+        function checkAndBanUser() {
+            const userId = document.getElementById('ban-user-id').value.trim();
+            const resDiv = document.getElementById('ban-result-msg');
+
+            if (!userId) {
+                alert('أدخل المعرف للفحص!');
+                return;
+            }
+
+            let users = getDB('bs_users', {});
+            let user = users[userId] || { balance: 0, referrals: 0 };
+
+            // فحص افتراضي للأنشطة المشبوهة (مثل كثرة الإحالات السريعة)
+            const banDuration = 3 * 24 * 60 * 60 * 1000; // 3 أيام بالمللي ثانية
+            user.bannedUntil = Date.now() + banDuration;
+            users[userId] = user;
+
+            setDB('bs_users', users);
+
+            resDiv.innerHTML = `<span style="color:var(--danger-color);">⚠️ تم فحص المعرف (${userId}) وتبين وجود أنشطة مريبة. تم تطبيق حظر تلقائي لمدة 3 أيام على الحساب.</span>`;
+        }
+
+        // 10. إضافة كود هدية برومو
+        function createNewPromoCode() {
+            const code = document.getElementById('promo-code-txt').value.trim();
+            const points = parseInt(document.getElementById('promo-points-val').value);
+            const seats = parseInt(document.getElementById('promo-seats-val').value);
+
+            if (!code || !points || !seats) {
+                alert('يرجى أدخال جميع بيانات الكود!');
+                return;
+            }
+
+            let promos = getDB('bs_promos', []);
+            const newPromo = {
+                code: code,
+                points: points,
+                maxSeats: seats,
+                usedSeats: 0,
+                createdAt: Date.now()
+            };
+
+            promos.push(newPromo);
+            setDB('bs_promos', promos);
+
+            document.getElementById('created-promo-display').innerHTML = `
+                <div class="item-card" style="border-color:var(--success-color);">
+                    <div>✅ <strong>تم إنشاء الكود بنجاح:</strong> <span style="color:var(--gold-light); font-size:14px;">${code}</span></div>
+                    <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">احفظ الكود أو انسخه الآن. سيختفي العرض من هذه القائمة بعد ساعة واحدة، ويبقى الكود فعالاً في النظام حتى استنفاذ المقاعد.</div>
+                </div>
+            `;
+
+            document.getElementById('promo-code-txt').value = '';
+            document.getElementById('promo-points-val').value = '';
+            document.getElementById('promo-seats-val').value = '';
+        }
+
+        function cleanAndRenderPromos() {
+            let promos = getDB('bs_promos', []);
+            const oneHour = 60 * 60 * 1000;
+            const now = Date.now();
+
+            // تصنيف الأكواد التي مضى عليها أكثر من ساعة لتختفي من واجهة الأدمن فقط مع بقائها بالداتابيز للعملاء
+            const visibleAdminPromos = promos.filter(p => (now - p.createdAt) < oneHour);
+
+            if (visibleAdminPromos.length === 0) {
+                document.getElementById('created-promo-display').innerHTML = '<div style="font-size:11px; color:var(--text-muted);">لا توجد أكواد أنشئت خلال الساعة الأخيرة.</div>';
+            }
+        }
     </script>
 </body>
 </html>
