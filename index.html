@@ -3,570 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOT SYRIA - لوحة الإدارة</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>BOT SYRIA - لوحة التحكم الإدارية</title>
+    <!-- مكتبات Firebase اللحظية -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
-        :root {
-            --bg-color: #0b0c10;
-            --card-bg: #14161f;
-            --gold-primary: #f59e0b;
-            --gold-light: #fbbf24;
-            --text-main: #ffffff;
-            --text-muted: #9ca3af;
-            --border-color: #2d3245;
-            --danger-color: #ef4444;
-            --success-color: #10b981;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 15px;
-            box-sizing: border-box;
-            user-select: none;
-            padding-bottom: 30px;
-        }
-
-        .admin-header {
-            background-color: var(--card-bg);
-            border: 2px solid var(--gold-primary);
-            border-radius: 16px;
-            padding: 15px;
-            text-align: center;
-            margin-bottom: 15px;
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
-        }
-
-        .admin-title { font-size: 18px; font-weight: bold; color: var(--gold-light); }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .menu-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--gold-primary);
-            color: #fff;
-            padding: 12px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .menu-btn:active { transform: scale(0.96); background: var(--gold-primary); color: #000; }
-
-        .section-card {
-            display: none;
-            background-color: var(--card-bg);
-            border: 2px solid var(--gold-primary);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 15px;
-        }
-
-        .section-card.active { display: block; }
-
-        .section-header {
-            font-size: 15px;
-            font-weight: bold;
-            color: var(--gold-light);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-            margin-bottom: 12px;
-        }
-
-        .form-group { margin-bottom: 10px; }
-        .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            background: #0b0c10;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 12px;
-            box-sizing: border-box;
-        }
-
-        .btn-action {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
-            margin-top: 6px;
-        }
-
-        .btn-green { background: var(--success-color); color: #fff; }
-        .btn-red { background: var(--danger-color); color: #fff; }
-        .btn-gold { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; }
-
-        .item-card {
-            background: #0b0c10;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 10px;
-            font-size: 12px;
-        }
-
-        .img-preview {
-            width: 100%;
-            max-height: 180px;
-            object-fit: contain;
-            border-radius: 8px;
-            margin: 8px 0;
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dashed var(--border-color);
-            font-size: 12px;
-        }
+        :root { --bg-color: #090d16; --card-bg: #151f32; --text: #f8fafc; --accent: #2563eb; --success: #16a34a; --danger: #dc2626; }
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text); margin: 0; padding: 15px; direction: rtl; }
+        .header { background: var(--card-bg); padding: 15px; border-radius: 14px; text-align: center; font-weight: bold; font-size: 20px; border: 1px solid #1e293b; margin-bottom: 20px; color: #60a5fa; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .card { background: var(--card-bg); padding: 16px; border-radius: 14px; margin-bottom: 20px; border: 1px solid #1e293b; }
+        .card-title { font-weight: bold; font-size: 16px; margin-bottom: 12px; color: #fbbf24; }
+        .form-control { width: 100%; padding: 10px; margin: 8px 0; background: #0b1120; border: 1px solid #334155; border-radius: 8px; color: #fff; box-sizing: border-box; }
+        .btn { padding: 10px 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-success { background: var(--success); }
+        .btn-danger { background: var(--danger); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .proof-img { width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; background: #000; margin: 8px 0; border: 1px solid #334155; }
+        .action-btns { display: flex; gap: 8px; margin-top: 8px; }
+        .action-btns button { flex: 1; }
     </style>
 </head>
 <body>
 
-    <div class="admin-header">
-        <div class="admin-title">🛠️ لوحة إدﺍﺭﺓ BOT SYRIA المربوطة</div>
+    <div class="header">
+        <span>⚙️ لوحة إدارة البوت المركزية (الأدمن)</span>
     </div>
 
-    <!-- أزرار التنقل بين الأقسام -->
-    <div class="menu-grid">
-        <button class="menu-btn" onclick="showSection('stats')">📊 إحصائيات</button>
-        <button class="menu-btn" onclick="showSection('proofs')">🖼️ الإثباتات</button>
-        <button class="menu-btn" onclick="showSection('withdrawals')">💎 السحوبات</button>
-        <button class="menu-btn" onclick="showSection('support')">🎧 الشكاوى</button>
-        <button class="menu-btn" onclick="showSection('add-task')">➕ إضافة مهمة</button>
-        <button class="menu-btn" onclick="showSection('delete-task')">❌ حذف مهمة</button>
-        <button class="menu-btn" onclick="showSection('add-balance')">💰 إضافة رصيد</button>
-        <button class="menu-btn" onclick="showSection('edit-values')">⚙️ تعديل القيم</button>
-        <button class="menu-btn" onclick="showSection('ban-user')">🚫 حظر غشاش</button>
-        <button class="menu-btn" onclick="showSection('add-promo')">🎁 كود هدية</button>
+    <!-- 1. نشر مهمة جديدة -->
+    <div class="card">
+        <div class="card-title">➕ نشر مهمة جديدة فوراً لجميع المستخدمين</div>
+        <input type="text" id="task-title" class="form-control" placeholder="عنوان المهمة (مثلاً: اشترك بالقناة)">
+        <input type="text" id="task-desc" class="form-control" placeholder="الوصف والتعليمات">
+        <input type="text" id="task-link" class="form-control" placeholder="رابط المهمة المباشر">
+        <div style="display:flex; gap:10px;">
+            <input type="number" id="task-seats" class="form-control" placeholder="عدد المقاعد المطلوبة">
+            <input type="number" id="task-reward" class="form-control" placeholder="المكافأة (ل.س)">
+        </div>
+        <button class="btn btn-success" style="width:100%; margin-top:10px;" onclick="addNewTask()">🚀 نشر المهمة اللحظية</button>
     </div>
 
-    <!-- 1. إحصائيات البوت -->
-    <div id="sec-stats" class="section-card">
-        <div class="section-header">📊 إحصائيات البوت الحقيقية</div>
-        <div id="stats-content"></div>
+    <!-- 2. مراجعة الإثباتات -->
+    <div class="card">
+        <div class="card-title">📸 الإثباتات المعلقة بانتظار الموافقة</div>
+        <div id="proofs-container" class="grid">جاري التحميل...</div>
     </div>
 
-    <!-- 2. إدارة الإثباتات -->
-    <div id="sec-proofs" class="section-card">
-        <div class="section-header">🖼️ مراجعة إثباتات المهام</div>
-        <div id="proofs-list"></div>
+    <!-- 3. مراجعة طلبات السحب -->
+    <div class="card">
+        <div class="card-title">💸 طلبات سحب الأرباح المعلقة</div>
+        <div id="withdrawals-container" class="grid">جاري التحميل...</div>
     </div>
 
-    <!-- 3. إدارة السحوبات -->
-    <div id="sec-withdrawals" class="section-card">
-        <div class="section-header">💎 طلبات السحب المعلقة</div>
-        <div id="withdrawals-list"></div>
+    <!-- 4. إنشاء كود ترويجي -->
+    <div class="card">
+        <div class="card-title">🎁 إنشاء كود ترويجي جديد</div>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="promo-code" class="form-control" placeholder="الكود (مثال: SYRIA2026)">
+            <input type="number" id="promo-points" class="form-control" placeholder="النقاط">
+            <input type="number" id="promo-seats" class="form-control" placeholder="المقاعد">
+        </div>
+        <button class="btn" style="width:100%; margin-top:8px;" onclick="addPromoCode()">حفظ الكود الترويجي</button>
     </div>
 
-    <!-- 4. إدارة الدعم الفني -->
-    <div id="sec-support" class="section-card">
-        <div class="section-header">🎧 الشكاوى والاستفسارات</div>
-        <div id="support-list"></div>
+    <!-- 5. إدارة الحظر -->
+    <div class="card">
+        <div class="card-title">🚫 إدارة وحظر المستخدمين</div>
+        <input type="text" id="ban-user-id" class="form-control" placeholder="معرف المستخدم (User ID)">
+        <div class="action-btns">
+            <button class="btn btn-danger" onclick="toggleBan(true)">حظر المستخدم</button>
+            <button class="btn btn-success" onclick="toggleBan(false)">إلغاء الحظر</button>
+        </div>
     </div>
 
-    <!-- 5. إضافة مهمة -->
-    <div id="sec-add-task" class="section-card">
-        <div class="section-header">➕ إضافة مهمة جديدة</div>
-        <div class="form-group"><label>عنوان المهمة:</label><input type="text" id="task-title-input" class="form-control"></div>
-        <div class="form-group"><label>شرح المهمة:</label><textarea id="task-desc-input" class="form-control" rows="2"></textarea></div>
-        <div class="form-group"><label>رابط المهمة:</label><input type="text" id="task-link-input" class="form-control"></div>
-        <div class="form-group"><label>عدد المقاعد:</label><input type="number" id="task-seats-input" class="form-control"></div>
-        <div class="form-group"><label>عدد النقاط (SYP):</label><input type="number" id="task-points-input" class="form-control"></div>
-        <button class="btn-action btn-gold" onclick="submitNewTask()">موافقة وإرسال المهمة للمستخدم فوراً</button>
+    <!-- 6. الدعم الفني -->
+    <div class="card">
+        <div class="card-title">💬 رسائل الدعم الفني المعلقة</div>
+        <div id="support-container" class="grid">جاري التحميل...</div>
     </div>
 
-    <!-- 6. حذف مهمة -->
-    <div id="sec-delete-task" class="section-card">
-        <div class="section-header">❌ حذف وإدارة المهام</div>
-        <div id="delete-tasks-list"></div>
-    </div>
+<script>
+    // ⚙️ إعدادات Firebase الخاصة بمشروعك
+    const firebaseConfig = {
+        apiKey: "AIzaSyD4EFPpYoKA0z-Jh5EaT-JmyJP-tAJKP9M",
+        authDomain: "bot-syria.firebaseapp.com",
+        databaseURL: "https://bot-syria-default-rtdb.firebaseio.com",
+        projectId: "bot-syria",
+        storageBucket: "bot-syria.firebasestorage.app",
+        messagingSenderId: "865938637842",
+        appId: "1:865938637842:web:cab563389cbb1d455084cb"
+    };
 
-    <!-- 7. إضافة رصيد بالآيدي -->
-    <div id="sec-add-balance" class="section-card">
-        <div class="section-header">💰 إضافة رصيد يدوي</div>
-        <div class="form-group"><label>معرف المستخدم (User ID):</label><input type="text" id="add-bal-id" class="form-control"></div>
-        <div class="form-group"><label>عدد النقاط (SYP):</label><input type="number" id="add-bal-amount" class="form-control"></div>
-        <button class="btn-action btn-gold" onclick="submitAddBalance()">إضافة النقاط فوراً</button>
-    </div>
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    <!-- 8. تعديل القيم -->
-    <div id="sec-edit-values" class="section-card">
-        <div class="section-header">⚙️ تعديل القيم الأساسية</div>
-        <div class="form-group"><label>الحد الأدنى للسحب (SYP):</label><input type="number" id="cfg-min-withdraw" class="form-control"></div>
-        <div class="form-group"><label>ربح الإحالة (SYP):</label><input type="number" id="cfg-ref-reward" class="form-control"></div>
-        <button class="btn-action btn-gold" onclick="saveGlobalSettings()">حفظ القيم الجديدة</button>
-    </div>
+    // ➕ نشر مهمة جديدة
+    async function addNewTask() {
+        const title = document.getElementById('task-title').value.trim();
+        const desc = document.getElementById('task-desc').value.trim();
+        const link = document.getElementById('task-link').value.trim();
+        const seats = parseInt(document.getElementById('task-seats').value);
+        const reward = parseInt(document.getElementById('task-reward').value);
 
-    <!-- 9. حظر غشاش -->
-    <div id="sec-ban-user" class="section-card">
-        <div class="section-header">🚫 حظر غشاش (3 أيام)</div>
-        <div class="form-group"><label>أدخل معرف المستخدم (User ID):</label><input type="text" id="ban-user-id" class="form-control"></div>
-        <button class="btn-action btn-gold" onclick="checkAndBanUser()">فحص وتطبيق الحظر فوراً</button>
-        <div id="ban-result-msg" style="margin-top:10px;"></div>
-    </div>
+        if (!title || !link || !seats || !reward) return alert('أكمل جميع البيانات بشكل صحيح!');
 
-    <!-- 10. إضافة كود برومو -->
-    <div id="sec-add-promo" class="section-card">
-        <div class="section-header">🎁 إضافة كود برومو جديد</div>
-        <div class="form-group"><label>كود البرومو:</label><input type="text" id="promo-code-txt" class="form-control"></div>
-        <div class="form-group"><label>قيمة الكود (SYP):</label><input type="number" id="promo-points-val" class="form-control"></div>
-        <div class="form-group"><label>عدد المقاعد:</label><input type="number" id="promo-seats-val" class="form-control"></div>
-        <button class="btn-action btn-gold" onclick="createNewPromoCode()">إنشاء الكود</button>
-        <div id="created-promo-display" style="margin-top:10px;"></div>
-    </div>
+        const newTaskRef = db.ref('tasks').push();
+        await newTaskRef.set({
+            title: title,
+            desc: desc,
+            link: link,
+            maxSeats: seats,
+            completedSeats: 0,
+            reward: reward,
+            createdAt: Date.now()
+        });
 
-    <script>
-        function getDB(key, defaultVal) {
-            const data = localStorage.getItem(key);
-            return data ? JSON.parse(data) : defaultVal;
+        alert('✅ تم نشر المهمة فوراً وقراءتها عبر كافة أجهزة المستخدمين!');
+        document.getElementById('task-title').value = '';
+        document.getElementById('task-desc').value = '';
+        document.getElementById('task-link').value = '';
+    }
+
+    // 📸 مراقبة الإثباتات
+    db.ref('proofs').orderByChild('status').equalTo('pending').on('value', (snapshot) => {
+        const container = document.getElementById('proofs-container');
+        const proofs = snapshot.val();
+
+        if (!proofs) {
+            container.innerHTML = '<div style="color:#94a3b8;">لا توجد إثباتات معلقة حالياً.</div>';
+            return;
         }
 
-        function setDB(key, val) {
-            localStorage.setItem(key, JSON.stringify(val));
-        }
-
-        function showSection(secId) {
-            document.querySelectorAll('.section-card').forEach(c => c.classList.remove('active'));
-            const target = document.getElementById('sec-' + secId);
-            if (target) target.classList.add('active');
-
-            if (secId === 'stats') renderStats();
-            if (secId === 'proofs') renderProofs();
-            if (secId === 'withdrawals') renderWithdrawals();
-            if (secId === 'support') renderSupport();
-            if (secId === 'delete-task') renderDeleteTasks();
-            if (secId === 'edit-values') loadGlobalSettings();
-            if (secId === 'add-promo') cleanAndRenderPromos();
-        }
-
-        function renderStats() {
-            const users = getDB('bs_users', {});
-            const tasks = getDB('bs_tasks', []);
-            const withdrawals = getDB('bs_withdrawals', []);
-            const proofs = getDB('bs_proofs', []);
-
-            const userKeys = Object.keys(users);
-            let totalBal = 0;
-            userKeys.forEach(k => totalBal += (users[k].balance || 0));
-
-            document.getElementById('stats-content').innerHTML = `
-                <div class="stat-row"><span>عدد المسجلين الكلي:</span><strong>${userKeys.length} مستخدم</strong></div>
-                <div class="stat-row"><span>إجمالي النقاط الحالية:</span><strong>${totalBal} SYP</strong></div>
-                <div class="stat-row"><span>المهام النشطة:</span><strong>${tasks.length} مهمة</strong></div>
-                <div class="stat-row"><span>طلب سحب معلق:</span><strong>${withdrawals.length} طلب</strong></div>
-                <div class="stat-row"><span>إثباتات قيد المراجعة:</span><strong>${proofs.length} إثبات</strong></div>
-            `;
-        }
-
-        function renderProofs() {
-            const proofs = getDB('bs_proofs', []);
-            const container = document.getElementById('proofs-list');
-
-            if (proofs.length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:var(--text-muted);">لا توجد إثباتات معلقة.</div>';
-                return;
-            }
-
-            let html = '';
-            proofs.forEach((item, index) => {
-                html += `
-                    <div class="item-card">
-                        <div><strong>المستخدم:</strong> ${item.userId}</div>
-                        <div><strong>المهمة:</strong> ${item.taskTitle} (+${item.reward} SYP)</div>
-                        <img src="${item.imgUrl}" class="img-preview" alt="الإثبات">
-                        <div class="btn-group">
-                            <button class="btn-action btn-green" onclick="handleProof(${index}, true)">✅ قبول</button>
-                            <button class="btn-action btn-red" onclick="handleProof(${index}, false)">❌ رفض</button>
-                        </div>
+        let html = '';
+        Object.keys(proofs).forEach(id => {
+            const p = proofs[id];
+            html += `
+                <div style="background:#0b1120; padding:12px; border-radius:8px; border:1px solid #334155;">
+                    <div><strong>المستخدم:</strong> ${p.userId}</div>
+                    <div><strong>المهمة:</strong> ${p.taskTitle} (+${p.reward} ل.س)</div>
+                    <img src="${p.imgUrl}" class="proof-img">
+                    <div class="action-btns">
+                        <button class="btn btn-success" onclick="handleProof('${id}', '${p.userId}', ${p.reward}, '${p.taskId}', true)">✅ قبول</button>
+                        <button class="btn btn-danger" onclick="handleProof('${id}', '${p.userId}', ${p.reward}, '${p.taskId}', false)">❌ رفض</button>
                     </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function handleProof(index, isApproved) {
-            let proofs = getDB('bs_proofs', []);
-            let users = getDB('bs_users', {});
-            let tasks = getDB('bs_tasks', []);
-            const proof = proofs[index];
-
-            if (!proof) return;
-            if (!users[proof.userId]) users[proof.userId] = { balance: 0 };
-
-            if (isApproved) {
-                users[proof.userId].balance = (users[proof.userId].balance || 0) + proof.reward;
-            } else {
-                let task = tasks.find(t => t.id === proof.taskId);
-                if (task && task.completedSeats > 0) {
-                    task.completedSeats -= 1;
-                }
-                localStorage.setItem(`task_proof_submitted_${proof.taskId}_${proof.userId}`, 'rejected');
-            }
-
-            proofs.splice(index, 1);
-            setDB('bs_proofs', proofs);
-            setDB('bs_users', users);
-            setDB('bs_tasks', tasks);
-            renderProofs();
-        }
-
-        function renderWithdrawals() {
-            const withdrawals = getDB('bs_withdrawals', []);
-            const container = document.getElementById('withdrawals-list');
-
-            if (withdrawals.length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:var(--text-muted);">لا توجد طلبات سحب معلقة.</div>';
-                return;
-            }
-
-            let html = '';
-            withdrawals.forEach((item, index) => {
-                html += `
-                    <div class="item-card">
-                        <div><strong>المستخدم:</strong> ${item.userId}</div>
-                        <div><strong>المبلغ:</strong> ${item.amount} SYP</div>
-                        <div><strong>الطريقة:</strong> ${item.method}</div>
-                        <div><strong>الحساب:</strong> ${item.account}</div>
-                        <div class="btn-group">
-                            <button class="btn-action btn-green" onclick="handleWithdrawal(${index}, true)">✅ موافقة</button>
-                            <button class="btn-action btn-red" onclick="handleWithdrawal(${index}, false)">❌ رفض وإعادة</button>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function handleWithdrawal(index, isApproved) {
-            let withdrawals = getDB('bs_withdrawals', []);
-            let users = getDB('bs_users', {});
-            const item = withdrawals[index];
-
-            if (!item) return;
-
-            if (!isApproved) {
-                if (!users[item.userId]) users[item.userId] = { balance: 0 };
-                users[item.userId].balance += item.amount;
-                setDB('bs_users', users);
-            }
-
-            withdrawals.splice(index, 1);
-            setDB('bs_withdrawals', withdrawals);
-            renderWithdrawals();
-        }
-
-        function renderSupport() {
-            const list = getDB('bs_support', []);
-            const container = document.getElementById('support-list');
-            const pendingList = list.filter(item => !item.replied);
-
-            if (pendingList.length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:var(--text-muted);">لا توجد شكاوى معلقة.</div>';
-                return;
-            }
-
-            let html = '';
-            pendingList.forEach((item) => {
-                html += `
-                    <div class="item-card">
-                        <div><strong>المستخدم:</strong> ${item.userId}</div>
-                        <div style="margin:6px 0; color:var(--gold-light);">"${item.message}"</div>
-                        <div class="form-group">
-                            <input type="text" id="reply-input-${item.id}" class="form-control" placeholder="اكتب ردك...">
-                        </div>
-                        <button class="btn-action btn-gold" onclick="sendSupportReply('${item.id}')">إرسال الرد وتصفية الرسالة</button>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function sendSupportReply(ticketId) {
-            let list = getDB('bs_support', []);
-            const replyTxt = document.getElementById(`reply-input-${ticketId}`).value.trim();
-
-            if (!replyTxt) { alert('اكتب الرد أولاً!'); return; }
-
-            let ticket = list.find(t => t.id === ticketId);
-            if (ticket) {
-                ticket.reply = replyTxt;
-                ticket.replied = true;
-                ticket.replyTimestamp = Date.now();
-            }
-
-            setDB('bs_support', list);
-            renderSupport();
-        }
-
-        function submitNewTask() {
-            const title = document.getElementById('task-title-input').value.trim();
-            const desc = document.getElementById('task-desc-input').value.trim();
-            const link = document.getElementById('task-link-input').value.trim();
-            const seats = parseInt(document.getElementById('task-seats-input').value);
-            const points = parseInt(document.getElementById('task-points-input').value);
-
-            if (!title || !desc || !link || !seats || !points) {
-                alert('اكمل تعبئة جميع بيانات المهمة!');
-                return;
-            }
-
-            let tasks = getDB('bs_tasks', []);
-            tasks.unshift({
-                id: Date.now(),
-                title: title,
-                desc: desc,
-                link: link,
-                maxSeats: seats,
-                completedSeats: 0,
-                reward: points
-            });
-
-            setDB('bs_tasks', tasks);
-            alert('تم نشر المهمة بنجاح إلى واجهة المستخدمين!');
-            document.getElementById('task-title-input').value = '';
-            document.getElementById('task-desc-input').value = '';
-            document.getElementById('task-link-input').value = '';
-            document.getElementById('task-seats-input').value = '';
-            document.getElementById('task-points-input').value = '';
-        }
-
-        function renderDeleteTasks() {
-            const tasks = getDB('bs_tasks', []);
-            const container = document.getElementById('delete-tasks-list');
-
-            if (tasks.length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:var(--text-muted);">لا توجد مهام نشطة.</div>';
-                return;
-            }
-
-            let html = '';
-            tasks.forEach((task, index) => {
-                html += `
-                    <div class="item-card" style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <strong>${task.title}</strong>
-                            <div style="font-size:10px; color:var(--text-muted);">${task.completedSeats}/${task.maxSeats} مقعد | ${task.reward} SYP</div>
-                        </div>
-                        <button class="btn-action btn-red" style="width:auto; padding:6px 12px; margin:0;" onclick="deleteTask(${index})">حذف</button>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function deleteTask(index) {
-            let tasks = getDB('bs_tasks', []);
-            tasks.splice(index, 1);
-            setDB('bs_tasks', tasks);
-            renderDeleteTasks();
-        }
-
-        function submitAddBalance() {
-            const userId = document.getElementById('add-bal-id').value.trim();
-            const amount = parseInt(document.getElementById('add-bal-amount').value);
-
-            if (!userId || !amount) { alert('أدخل الآيدي وعدد النقاط!'); return; }
-
-            let users = getDB('bs_users', {});
-            if (!users[userId]) users[userId] = { balance: 0 };
-
-            users[userId].balance += amount;
-            setDB('bs_users', users);
-
-            alert(`تمت إضافة ${amount} SYP بنجاح إلى المستخدم ${userId}`);
-            document.getElementById('add-bal-id').value = '';
-            document.getElementById('add-bal-amount').value = '';
-        }
-
-        function loadGlobalSettings() {
-            const settings = getDB('bs_settings', { minWithdrawal: 250, refReward: 1 });
-            document.getElementById('cfg-min-withdraw').value = settings.minWithdrawal;
-            document.getElementById('cfg-ref-reward').value = settings.refReward;
-        }
-
-        function saveGlobalSettings() {
-            const minWithdraw = parseInt(document.getElementById('cfg-min-withdraw').value);
-            const refReward = parseInt(document.getElementById('cfg-ref-reward').value);
-
-            if (!minWithdraw || !refReward) { alert('ادخل القيم!'); return; }
-
-            setDB('bs_settings', { minWithdrawal: minWithdraw, refReward: refReward });
-            alert('تم تحديث القيم لجميع المستخدمين!');
-        }
-
-        function checkAndBanUser() {
-            const userId = document.getElementById('ban-user-id').value.trim();
-            if (!userId) { alert('أدخل آيدي المستخدم!'); return; }
-
-            let users = getDB('bs_users', {});
-            let user = users[userId] || { balance: 0 };
-
-            user.bannedUntil = Date.now() + (3 * 24 * 60 * 60 * 1000);
-            users[userId] = user;
-            setDB('bs_users', users);
-
-            document.getElementById('ban-result-msg').innerHTML = `<span style="color:var(--danger-color);">⚠️ تم حظر الحساب (${userId}) لمدة 3 أيام بنجاح.</span>`;
-        }
-
-        function createNewPromoCode() {
-            const code = document.getElementById('promo-code-txt').value.trim();
-            const points = parseInt(document.getElementById('promo-points-val').value);
-            const seats = parseInt(document.getElementById('promo-seats-val').value);
-
-            if (!code || !points || !seats) { alert('ادخل كافة البيانات!'); return; }
-
-            let promos = getDB('bs_promos', []);
-            promos.push({
-                code: code,
-                points: points,
-                maxSeats: seats,
-                usedSeats: 0,
-                createdAt: Date.now()
-            });
-
-            setDB('bs_promos', promos);
-
-            document.getElementById('created-promo-display').innerHTML = `
-                <div class="item-card" style="border-color:var(--success-color);">
-                    <div>✅ <strong>تم إنشاء الكود:</strong> <span style="color:var(--gold-light);">${code}</span></div>
-                    <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">انسخ الكود الآن، سيختفي من واجهة الأدمن بعد 1 ساعة مع بقائه فعالاً للمستخدمين حتى نفاد المقاعد.</div>
                 </div>
             `;
+        });
+        container.innerHTML = html;
+    });
 
-            document.getElementById('promo-code-txt').value = '';
-            document.getElementById('promo-points-val').value = '';
-            document.getElementById('promo-seats-val').value = '';
+    // ⚖️ قبول / رفض الإثبات
+    async function handleProof(proofId, userId, reward, taskId, approve) {
+        if (approve) {
+            const uSnap = await db.ref(`users/${userId}/balance`).once('value');
+            const currentBal = uSnap.val() || 0;
+            await db.ref(`users/${userId}/balance`).set(currentBal + reward);
+
+            const tSnap = await db.ref(`tasks/${taskId}/completedSeats`).once('value');
+            const currentSeats = tSnap.val() || 0;
+            await db.ref(`tasks/${taskId}/completedSeats`).set(currentSeats + 1);
+
+            await db.ref(`proofs/${proofId}/status`).set('approved');
+            alert('✅ تم قبول الإثبات وإضافة الرصيد!');
+        } else {
+            await db.ref(`proofs/${proofId}/status`).set('rejected');
+            alert('❌ تم رفض الإثبات.');
+        }
+    }
+
+    // 💸 مراقبة طلبات السحب
+    db.ref('withdrawals').orderByChild('status').equalTo('pending').on('value', (snapshot) => {
+        const container = document.getElementById('withdrawals-container');
+        const data = snapshot.val();
+
+        if (!data) {
+            container.innerHTML = '<div style="color:#94a3b8;">لا توجد طلبات سحب معلقة.</div>';
+            return;
         }
 
-        function cleanAndRenderPromos() {
-            let promos = getDB('bs_promos', []);
-            const oneHour = 60 * 60 * 1000;
-            const visiblePromos = promos.filter(p => (Date.now() - p.createdAt) < oneHour);
+        let html = '';
+        Object.keys(data).forEach(id => {
+            const w = data[id];
+            html += `
+                <div style="background:#0b1120; padding:12px; border-radius:8px; border:1px solid #334155;">
+                    <div><strong>المستخدم:</strong> ${w.userId}</div>
+                    <div><strong>المبلغ:</strong> ${(w.amount || 0).toLocaleString()} ل.س</div>
+                    <div><strong>الطريقة:</strong> ${w.method}</div>
+                    <div><strong>الحساب:</strong> ${w.account}</div>
+                    <div class="action-btns">
+                        <button class="btn btn-success" onclick="handleWithdraw('${id}', '${w.userId}', ${w.amount}, true)">✅ تم التحويل</button>
+                        <button class="btn btn-danger" onclick="handleWithdraw('${id}', '${w.userId}', ${w.amount}, false)">❌ رفض وإعادة الرصيد</button>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    });
 
-            if (visiblePromos.length === 0) {
-                document.getElementById('created-promo-display').innerHTML = '<div style="font-size:11px; color:var(--text-muted);">لا توجد أكواد حديثة أُنشئت خلال الساعة الأخيرة.</div>';
-            }
+    async function handleWithdraw(withdrawId, userId, amount, approve) {
+        if (approve) {
+            await db.ref(`withdrawals/${withdrawId}/status`).set('approved');
+            alert('✅ تم تأكيد السحب بنجاح!');
+        } else {
+            const uSnap = await db.ref(`users/${userId}/balance`).once('value');
+            const currentBal = uSnap.val() || 0;
+            await db.ref(`users/${userId}/balance`).set(currentBal + amount);
+            await db.ref(`withdrawals/${withdrawId}/status`).set('rejected');
+            alert('❌ تم رفض السحب وإعادة الرصيد للمستخدم!');
         }
-    </script>
+    }
+
+    // 🎁 إضافة كود ترويجي
+    async function addPromoCode() {
+        const code = document.getElementById('promo-code').value.trim();
+        const points = parseInt(document.getElementById('promo-points').value);
+        const seats = parseInt(document.getElementById('promo-seats').value);
+
+        if (!code || !points || !seats) return alert('يرجى كتابة كافة البيانات');
+
+        await db.ref(`promos/${code}`).set({
+            points: points,
+            maxSeats: seats,
+            usedSeats: 0
+        });
+
+        alert('✅ تم إنشاء الكود الترويجي بنجاح!');
+    }
+
+    // 🚫 حظر / إلغاء حظر
+    async function toggleBan(isBan) {
+        const userId = document.getElementById('ban-user-id').value.trim();
+        if (!userId) return alert('أدخل ID المستخدم');
+
+        const banTime = isBan ? Date.now() + (365 * 24 * 60 * 60 * 1000) : 0;
+        await db.ref(`users/${userId}/bannedUntil`).set(banTime);
+
+        alert(isBan ? '🚫 تم حظر المستخدم!' : '✅ تم إلغاء حظر المستخدم!');
+    }
+
+    // 💬 مراقبة الدعم
+    db.ref('support').orderByChild('status').equalTo('pending').on('value', (snapshot) => {
+        const container = document.getElementById('support-container');
+        const data = snapshot.val();
+
+        if (!data) {
+            container.innerHTML = '<div style="color:#94a3b8;">لا توجد رسائل دعم معلقة.</div>';
+            return;
+        }
+
+        let html = '';
+        Object.keys(data).forEach(id => {
+            const msg = data[id];
+            html += `
+                <div style="background:#0b1120; padding:12px; border-radius:8px; border:1px solid #334155;">
+                    <div><strong>المستخدم:</strong> ${msg.userId}</div>
+                    <div style="margin:5px 0;"><strong>الرسالة:</strong> ${msg.message}</div>
+                    <input type="text" id="reply-${id}" class="form-control" placeholder="اكتب ردك هنا...">
+                    <button class="btn btn-success" style="width:100%;" onclick="sendSupportReply('${id}')">إرسال الرد</button>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    });
+
+    async function sendSupportReply(id) {
+        const replyText = document.getElementById(`reply-${id}`).value.trim();
+        if (!replyText) return alert('اكتب الرد أولاً');
+
+        await db.ref(`support/${id}`).update({
+            reply: replyText,
+            status: 'replied'
+        });
+
+        alert('✅ تم إرسال الرد بنجاح!');
+    }
+</script>
 </body>
 </html>
