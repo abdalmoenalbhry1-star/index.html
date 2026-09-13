@@ -2,280 +2,840 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOT SYRIA - لوحة التحكم الإدارية</title>
-    <!-- مكتبات Firebase اللحظية -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>لوحة إدارة BOT SYRIA</title>
+    
+    <!-- Firebase SDK (Compat Version) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+
     <style>
-        :root { --bg-color: #090d16; --card-bg: #151f32; --text: #f8fafc; --accent: #2563eb; --success: #16a34a; --danger: #dc2626; }
-        body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text); margin: 0; padding: 15px; direction: rtl; }
-        .header { background: var(--card-bg); padding: 15px; border-radius: 14px; text-align: center; font-weight: bold; font-size: 20px; border: 1px solid #1e293b; margin-bottom: 20px; color: #60a5fa; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .card { background: var(--card-bg); padding: 16px; border-radius: 14px; margin-bottom: 20px; border: 1px solid #1e293b; }
-        .card-title { font-weight: bold; font-size: 16px; margin-bottom: 12px; color: #fbbf24; }
-        .form-control { width: 100%; padding: 10px; margin: 8px 0; background: #0b1120; border: 1px solid #334155; border-radius: 8px; color: #fff; box-sizing: border-box; }
-        .btn { padding: 10px 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-success { background: var(--success); }
-        .btn-danger { background: var(--danger); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
-        .proof-img { width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; background: #000; margin: 8px 0; border: 1px solid #334155; }
-        .action-btns { display: flex; gap: 8px; margin-top: 8px; }
-        .action-btns button { flex: 1; }
+        :root {
+            --bg-dark: #08090c;
+            --card-bg: rgba(18, 20, 26, 0.95);
+            --gold-primary: #ffb700;
+            --gold-secondary: #d4af37;
+            --gold-glow: rgba(255, 183, 0, 0.3);
+            --text-main: #f8f9fa;
+            --text-muted: #9aa0a6;
+            --danger: #ff4757;
+            --success: #2ed573;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --transition: all 0.25s ease-in-out;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        /* Lock Screen Overlay */
+        #auth-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000000;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            border: 2px solid var(--gold-primary);
+            border-radius: var(--radius-lg);
+            padding: 30px 24px;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 0 30px var(--gold-glow);
+        }
+
+        .auth-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--gold-primary);
+            margin-bottom: 8px;
+        }
+
+        .auth-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        /* Layout Architecture */
+        .admin-header {
+            background: var(--card-bg);
+            border-bottom: 1px solid rgba(255, 183, 0, 0.2);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .admin-title {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: var(--gold-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            white-space: nowrap;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 183, 0, 0.2);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .nav-btn.active {
+            background: var(--gold-primary);
+            color: #000;
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 12px var(--gold-glow);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .page-panel {
+            display: none;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .page-panel.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card & UI Controls */
+        .admin-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 183, 0, 0.2);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .card-header-title {
+            font-weight: 900;
+            font-size: 1.05rem;
+            color: var(--gold-primary);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+            text-align: right;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 183, 0, 0.3);
+            padding: 10px 12px;
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            border-color: var(--gold-primary);
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+            color: #000;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 900;
+            font-size: 0.9rem;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .btn-action:active { transform: scale(0.98); }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-success { background: var(--success); color: #000; }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 183, 0, 0.2);
+            padding: 14px;
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .stat-val { font-size: 1.5rem; font-weight: 900; color: var(--gold-primary); }
+        .stat-lbl { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+
+        .empty-msg {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 30px 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Modal Alert */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.85);
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-body {
+            background: #11131a;
+            border: 1px solid var(--gold-primary);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 360px;
+            padding: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <span>⚙️ لوحة إدارة البوت المركزية (الأدمن)</span>
-    </div>
-
-    <!-- 1. نشر مهمة جديدة -->
-    <div class="card">
-        <div class="card-title">➕ نشر مهمة جديدة فوراً لجميع المستخدمين</div>
-        <input type="text" id="task-title" class="form-control" placeholder="عنوان المهمة (مثلاً: اشترك بالقناة)">
-        <input type="text" id="task-desc" class="form-control" placeholder="الوصف والتعليمات">
-        <input type="text" id="task-link" class="form-control" placeholder="رابط المهمة المباشر">
-        <div style="display:flex; gap:10px;">
-            <input type="number" id="task-seats" class="form-control" placeholder="عدد المقاعد المطلوبة">
-            <input type="number" id="task-reward" class="form-control" placeholder="المكافأة (ل.س)">
-        </div>
-        <button class="btn btn-success" style="width:100%; margin-top:10px;" onclick="addNewTask()">🚀 نشر المهمة اللحظية</button>
-    </div>
-
-    <!-- 2. مراجعة الإثباتات -->
-    <div class="card">
-        <div class="card-title">📸 الإثباتات المعلقة بانتظار الموافقة</div>
-        <div id="proofs-container" class="grid">جاري التحميل...</div>
-    </div>
-
-    <!-- 3. مراجعة طلبات السحب -->
-    <div class="card">
-        <div class="card-title">💸 طلبات سحب الأرباح المعلقة</div>
-        <div id="withdrawals-container" class="grid">جاري التحميل...</div>
-    </div>
-
-    <!-- 4. إنشاء كود ترويجي -->
-    <div class="card">
-        <div class="card-title">🎁 إنشاء كود ترويجي جديد</div>
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="promo-code" class="form-control" placeholder="الكود (مثال: SYRIA2026)">
-            <input type="number" id="promo-points" class="form-control" placeholder="النقاط">
-            <input type="number" id="promo-seats" class="form-control" placeholder="المقاعد">
-        </div>
-        <button class="btn" style="width:100%; margin-top:8px;" onclick="addPromoCode()">حفظ الكود الترويجي</button>
-    </div>
-
-    <!-- 5. إدارة الحظر -->
-    <div class="card">
-        <div class="card-title">🚫 إدارة وحظر المستخدمين</div>
-        <input type="text" id="ban-user-id" class="form-control" placeholder="معرف المستخدم (User ID)">
-        <div class="action-btns">
-            <button class="btn btn-danger" onclick="toggleBan(true)">حظر المستخدم</button>
-            <button class="btn btn-success" onclick="toggleBan(false)">إلغاء الحظر</button>
+    <!-- LOCK SCREEN SECURITY -->
+    <div id="auth-screen">
+        <div class="auth-card">
+            <div class="auth-title">لوحة الإدارة المشفرة 🛡️</div>
+            <div class="auth-desc">أدخل كلمة المرور للوصول إلى أدوات التحكم</div>
+            <div class="form-group">
+                <input type="password" id="auth-pass" class="form-input" placeholder="كلمة المرور..." style="text-align: center; font-size: 1.2rem; letter-spacing: 3px;">
+            </div>
+            <button class="btn-action" onclick="checkAdminPassword()">تسجيل الدخول 🔑</button>
         </div>
     </div>
 
-    <!-- 6. الدعم الفني -->
-    <div class="card">
-        <div class="card-title">💬 رسائل الدعم الفني المعلقة</div>
-        <div id="support-container" class="grid">جاري التحميل...</div>
+    <!-- ALERT MODAL -->
+    <div class="modal-overlay" id="alert-modal">
+        <div class="modal-body">
+            <div style="font-weight: 900; color: var(--gold-primary); margin-bottom: 10px;" id="alert-title">تنبيه</div>
+            <div id="alert-msg" style="font-size: 0.9rem; margin-bottom: 16px;"></div>
+            <button class="btn-action" onclick="closeModal('alert-modal')">حسناً 👍</button>
+        </div>
     </div>
 
-<script>
-    // ⚙️ إعدادات Firebase الخاصة بمشروعك
-    const firebaseConfig = {
-        apiKey: "AIzaSyD4EFPpYoKA0z-Jh5EaT-JmyJP-tAJKP9M",
-        authDomain: "bot-syria.firebaseapp.com",
-        databaseURL: "https://bot-syria-default-rtdb.firebaseio.com",
-        projectId: "bot-syria",
-        storageBucket: "bot-syria.firebasestorage.app",
-        messagingSenderId: "865938637842",
-        appId: "1:865938637842:web:cab563389cbb1d455084cb"
-    };
+    <!-- MAIN ADMIN INTERFACE -->
+    <header class="admin-header">
+        <div class="admin-title">⚙️ إدارة BOT SYRIA</div>
+        <button class="btn-action btn-danger" style="width: auto; padding: 6px 12px; font-size: 0.75rem;" onclick="location.reload()">قفل اللوحة 🔒</button>
+    </header>
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    <nav class="nav-scroll">
+        <button class="nav-btn active" onclick="showPage('p-stats', this)">📊 الإحصائيات</button>
+        <button class="nav-btn" onclick="showPage('p-proofs', this)">📤 الإثباتات</button>
+        <button class="nav-btn" onclick="showPage('p-withdraws', this)">💰 السحوبات</button>
+        <button class="nav-btn" onclick="showPage('p-support', this)">💬 الدعم الفني</button>
+        <button class="nav-btn" onclick="showPage('p-add-task', this)">➕ إضافة مهمة</button>
+        <button class="nav-btn" onclick="showPage('p-manage-tasks', this)">🗑️ إدارة المهام</button>
+        <button class="nav-btn" onclick="showPage('p-promo', this)">🎁 البرومو كود</button>
+        <button class="nav-btn" onclick="showPage('p-inspect', this)">🔍 فحص الغش</button>
+        <button class="nav-btn" onclick="showPage('p-balance', this)">💳 تعديل الرصيد</button>
+        <button class="nav-btn" onclick="showPage('p-config', this)">⚙️ ضبط القيم</button>
+    </nav>
 
-    // ➕ نشر مهمة جديدة
-    async function addNewTask() {
-        const title = document.getElementById('task-title').value.trim();
-        const desc = document.getElementById('task-desc').value.trim();
-        const link = document.getElementById('task-link').value.trim();
-        const seats = parseInt(document.getElementById('task-seats').value);
-        const reward = parseInt(document.getElementById('task-reward').value);
+    <div class="container">
 
-        if (!title || !link || !seats || !reward) return alert('أكمل جميع البيانات بشكل صحيح!');
-
-        const newTaskRef = db.ref('tasks').push();
-        await newTaskRef.set({
-            title: title,
-            desc: desc,
-            link: link,
-            maxSeats: seats,
-            completedSeats: 0,
-            reward: reward,
-            createdAt: Date.now()
-        });
-
-        alert('✅ تم نشر المهمة فوراً وقراءتها عبر كافة أجهزة المستخدمين!');
-        document.getElementById('task-title').value = '';
-        document.getElementById('task-desc').value = '';
-        document.getElementById('task-link').value = '';
-    }
-
-    // 📸 مراقبة الإثباتات
-    db.ref('proofs').orderByChild('status').equalTo('pending').on('value', (snapshot) => {
-        const container = document.getElementById('proofs-container');
-        const proofs = snapshot.val();
-
-        if (!proofs) {
-            container.innerHTML = '<div style="color:#94a3b8;">لا توجد إثباتات معلقة حالياً.</div>';
-            return;
-        }
-
-        let html = '';
-        Object.keys(proofs).forEach(id => {
-            const p = proofs[id];
-            html += `
-                <div style="background:#0b1120; padding:12px; border-radius:8px; border:1px solid #334155;">
-                    <div><strong>المستخدم:</strong> ${p.userId}</div>
-                    <div><strong>المهمة:</strong> ${p.taskTitle} (+${p.reward} ل.س)</div>
-                    <img src="${p.imgUrl}" class="proof-img">
-                    <div class="action-btns">
-                        <button class="btn btn-success" onclick="handleProof('${id}', '${p.userId}', ${p.reward}, '${p.taskId}', true)">✅ قبول</button>
-                        <button class="btn btn-danger" onclick="handleProof('${id}', '${p.userId}', ${p.reward}, '${p.taskId}', false)">❌ رفض</button>
+        <!-- PAGE 1: STATS -->
+        <div id="p-stats" class="page-panel active">
+            <div class="admin-card">
+                <div class="card-header-title">📊 إحصائيات البوت اللحظية</div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-val" id="st-users">0</div>
+                        <div class="stat-lbl">إجمالي المستخدمين</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" id="st-withdraws">0</div>
+                        <div class="stat-lbl">سحوبات معلقة</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" id="st-proofs">0</div>
+                        <div class="stat-lbl">إثباتات معلقة</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" id="st-support">0</div>
+                        <div class="stat-lbl">رسائل دعم مفتوحة</div>
                     </div>
                 </div>
-            `;
-        });
-        container.innerHTML = html;
-    });
+            </div>
+        </div>
 
-    // ⚖️ قبول / رفض الإثبات
-    async function handleProof(proofId, userId, reward, taskId, approve) {
-        if (approve) {
-            const uSnap = await db.ref(`users/${userId}/balance`).once('value');
-            const currentBal = uSnap.val() || 0;
-            await db.ref(`users/${userId}/balance`).set(currentBal + reward);
+        <!-- PAGE 2: PROOFS -->
+        <div id="p-proofs" class="page-panel">
+            <div class="card-header-title">📤 إدارة إثباتات المهام المعلقة</div>
+            <div id="container-proofs"></div>
+        </div>
 
-            const tSnap = await db.ref(`tasks/${taskId}/completedSeats`).once('value');
-            const currentSeats = tSnap.val() || 0;
-            await db.ref(`tasks/${taskId}/completedSeats`).set(currentSeats + 1);
+        <!-- PAGE 3: WITHDRAWS -->
+        <div id="p-withdraws" class="page-panel">
+            <div class="card-header-title">💰 طلبات سحب الأرباح المعلقة</div>
+            <div id="container-withdraws"></div>
+        </div>
 
-            await db.ref(`proofs/${proofId}/status`).set('approved');
-            alert('✅ تم قبول الإثبات وإضافة الرصيد!');
-        } else {
-            await db.ref(`proofs/${proofId}/status`).set('rejected');
-            alert('❌ تم رفض الإثبات.');
+        <!-- PAGE 4: SUPPORT -->
+        <div id="p-support" class="page-panel">
+            <div class="card-header-title">💬 تذاكر الدعم الفني المفتوحة</div>
+            <div id="container-support"></div>
+        </div>
+
+        <!-- PAGE 5: ADD TASK -->
+        <div id="p-add-task" class="page-panel">
+            <div class="admin-card">
+                <div class="card-header-title">➕ نشر مهمة جديدة</div>
+                <div class="form-group">
+                    <label class="form-label">عنوان المهمة</label>
+                    <input type="text" id="task-in-title" class="form-input" placeholder="مثال: اشترك في القناة الرسمية">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">رابط المهمة (Telegram Link)</label>
+                    <input type="text" id="task-in-link" class="form-input" placeholder="https://t.me/...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">المكافأة (ل.س)</label>
+                    <input type="number" id="task-in-reward" class="form-input" placeholder="500">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">إجمالي عدد المقاعد المتاحة</label>
+                    <input type="number" id="task-in-seats" class="form-input" placeholder="100">
+                </div>
+                <button class="btn-action" onclick="createNewTask()">نشر المهمة فوراً 🚀</button>
+            </div>
+        </div>
+
+        <!-- PAGE 6: MANAGE TASKS -->
+        <div id="p-manage-tasks" class="page-panel">
+            <div class="card-header-title">🗑️ إدارة وإيقاف المهام الحالية</div>
+            <div id="container-tasks-manage"></div>
+        </div>
+
+        <!-- PAGE 7: PROMO CODE -->
+        <div id="p-promo" class="page-panel">
+            <div class="admin-card">
+                <div class="card-header-title">🎁 إنشاء كود برومو جديد</div>
+                <div class="form-group">
+                    <label class="form-label">رمز الكود (Promo Code)</label>
+                    <input type="text" id="promo-in-code" class="form-input" placeholder="SYRIA2026" style="text-transform: uppercase;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">قيمة الهدايا (ل.س)</label>
+                    <input type="number" id="promo-in-reward" class="form-input" placeholder="1000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">عدد الاستخدامات المتاحة (المقاعد)</label>
+                    <input type="number" id="promo-in-uses" class="form-input" placeholder="50">
+                </div>
+                <button class="btn-action" onclick="createNewPromoCode()">إنشاء الكود 🎁</button>
+            </div>
+            <div class="card-header-title" style="margin-top: 15px;">الأكواد الفعالة حالياً</div>
+            <div id="container-promos-list"></div>
+        </div>
+
+        <!-- PAGE 8: INSPECT USER -->
+        <div id="p-inspect" class="page-panel">
+            <div class="admin-card">
+                <div class="card-header-title">🔍 فحص سوابق المستخدم والتأكد من الغش</div>
+                <div class="form-group">
+                    <label class="form-label">أدخل معرف التلغرام (Telegram ID)</label>
+                    <input type="number" id="inspect-in-id" class="form-input" placeholder="123456789">
+                </div>
+                <button class="btn-action" onclick="inspectUserAccount()">فحص الحساب 🔎</button>
+            </div>
+            <div id="container-inspect-result"></div>
+        </div>
+
+        <!-- PAGE 9: MANUAL BALANCE -->
+        <div id="p-balance" class="page-panel">
+            <div class="admin-card">
+                <div class="card-header-title">💳 إضافة أو خصم رصيد يدوياً بالـ ID</div>
+                <div class="form-group">
+                    <label class="form-label">معرف التلغرام (Telegram ID)</label>
+                    <input type="number" id="bal-in-id" class="form-input" placeholder="123456789">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">المبلغ (ل.س)</label>
+                    <input type="number" id="bal-in-amt" class="form-input" placeholder="5000">
+                </div>
+                <div class="btn-group">
+                    <button class="btn-action btn-success" onclick="modifyUserBalance('add')">إضافة للرصيد ➕</button>
+                    <button class="btn-action btn-danger" onclick="modifyUserBalance('deduct')">خصم من الرصيد ➖</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 10: SYSTEM CONFIG -->
+        <div id="p-config" class="page-panel">
+            <div class="admin-card">
+                <div class="card-header-title">⚙️ ضبط متغيرات النظام العامة</div>
+                <div class="form-group">
+                    <label class="form-label">الحد الأدنى للسحب (ل.س)</label>
+                    <input type="number" id="cfg-min-withdraw" class="form-input" value="5000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">مكافأة الإحالة الواحدة (ل.س)</label>
+                    <input type="number" id="cfg-ref-reward" class="form-input" value="500">
+                </div>
+                <button class="btn-action" onclick="saveSystemConfig()">حفظ الإعدادات 💾</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const ADMIN_PASS = "201063";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_FIREBASE_API_KEY",
+            authDomain: "bot-syria.firebaseapp.com",
+            projectId: "bot-syria",
+            storageBucket: "bot-syria.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
+        let db = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+        } catch (e) {
+            console.error("Firebase Initialization Error:", e);
         }
-    }
 
-    // 💸 مراقبة طلبات السحب
-    db.ref('withdrawals').orderByChild('status').equalTo('pending').on('value', (snapshot) => {
-        const container = document.getElementById('withdrawals-container');
-        const data = snapshot.val();
-
-        if (!data) {
-            container.innerHTML = '<div style="color:#94a3b8;">لا توجد طلبات سحب معلقة.</div>';
-            return;
+        function checkAdminPassword() {
+            const val = document.getElementById('auth-pass').value.trim();
+            if (val === ADMIN_PASS) {
+                document.getElementById('auth-screen').style.display = 'none';
+                initRealtimeListeners();
+            } else {
+                showAlert('كلمة المرور غير صحيحة! تم رفض الوصول.');
+                document.getElementById('auth-pass').value = '';
+            }
         }
 
-        let html = '';
-        Object.keys(data).forEach(id => {
-            const w = data[id];
-            html += `
-                <div style="background:#0b1120; padding:12px; border-radius:8px; border:1px solid #334155;">
-                    <div><strong>المستخدم:</strong> ${w.userId}</div>
-                    <div><strong>المبلغ:</strong> ${(w.amount || 0).toLocaleString()} ل.س</div>
-                    <div><strong>الطريقة:</strong> ${w.method}</div>
-                    <div><strong>الحساب:</strong> ${w.account}</div>
-                    <div class="action-btns">
-                        <button class="btn btn-success" onclick="handleWithdraw('${id}', '${w.userId}', ${w.amount}, true)">✅ تم التحويل</button>
-                        <button class="btn btn-danger" onclick="handleWithdraw('${id}', '${w.userId}', ${w.amount}, false)">❌ رفض وإعادة الرصيد</button>
+        function showAlert(msg) {
+            document.getElementById('alert-msg').innerText = msg;
+            document.getElementById('alert-modal').classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function showPage(pageId, btn) {
+            document.querySelectorAll('.page-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // Realtime Database Watchers
+        function initRealtimeListeners() {
+            if (!db) return;
+
+            // Stats Counters
+            db.collection('users').onSnapshot(snap => document.getElementById('st-users').innerText = snap.size);
+            db.collection('admin_withdrawals').where('status', '==', 'pending').onSnapshot(snap => document.getElementById('st-withdraws').innerText = snap.size);
+            db.collection('admin_proofs').where('status', '==', 'pending').onSnapshot(snap => document.getElementById('st-proofs').innerText = snap.size);
+            db.collection('admin_support').where('status', '==', 'open').onSnapshot(snap => document.getElementById('st-support').innerText = snap.size);
+
+            // Listeners for pending items
+            loadPendingProofs();
+            loadPendingWithdrawals();
+            loadOpenSupport();
+            loadManageableTasks();
+            loadActivePromos();
+        }
+
+        // 1. Proofs Management
+        function loadPendingProofs() {
+            db.collection('admin_proofs').where('status', '==', 'pending').onSnapshot(snap => {
+                const box = document.getElementById('container-proofs');
+                box.innerHTML = '';
+                if (snap.empty) return box.innerHTML = '<div class="empty-msg">لا توجد إثباتات معلقة للمراجعة حالياً 🎉</div>';
+
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    box.innerHTML += `
+                        <div class="admin-card" id="proof-${doc.id}">
+                            <div style="font-weight:800; font-size:0.9rem;">المستخدم: ${data.userName} (ID: ${data.userId})</div>
+                            <div style="color:var(--gold-primary); font-weight:800; margin:4px 0;">المهمة: ${data.taskTitle}</div>
+                            <div style="font-size:0.85rem; background:rgba(0,0,0,0.4); padding:8px; border-radius:8px; margin:8px 0;">${data.proofText}</div>
+                            <div class="btn-group">
+                                <button class="btn-action btn-success" onclick="processProof('${doc.id}', '${data.userId}', '${data.taskId}', true)">قبول وإضافة المكافأة ✅</button>
+                                <button class="btn-action btn-danger" onclick="processProof('${doc.id}', '${data.userId}', '${data.taskId}', false)">رفض الإثبات ❌</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        async function processProof(proofId, userId, taskId, isApproved) {
+            try {
+                if (isApproved) {
+                    const taskDoc = await db.collection('tasks').doc(taskId).get();
+                    if (!taskDoc.exists) throw "المهمة غير موجودة!";
+                    const reward = taskDoc.data().reward || 0;
+
+                    await db.runTransaction(async (tr) => {
+                        const userRef = db.collection('users').doc(String(userId));
+                        const taskRef = db.collection('tasks').doc(taskId);
+                        const proofRef = db.collection('admin_proofs').doc(proofId);
+
+                        const userDoc = await tr.get(userRef);
+                        const tDoc = await tr.get(taskRef);
+
+                        tr.update(userRef, {
+                            balance: (userDoc.data().balance || 0) + reward,
+                            completedTasks: firebase.firestore.FieldValue.arrayUnion(taskId)
+                        });
+                        tr.update(taskRef, { claimedSeats: (tDoc.data().claimedSeats || 0) + 1 });
+                        tr.update(proofRef, { status: 'approved' });
+                    });
+                } else {
+                    await db.collection('admin_proofs').doc(proofId).update({ status: 'rejected' });
+                }
+                showAlert('تم اتخاذ القرار واختفاء الطلب من القائمة ✅');
+            } catch (e) {
+                showAlert('حدث خطأ: ' + e);
+            }
+        }
+
+        // 2. Withdrawals Management
+        function loadPendingWithdrawals() {
+            db.collection('admin_withdrawals').where('status', '==', 'pending').onSnapshot(snap => {
+                const box = document.getElementById('container-withdraws');
+                box.innerHTML = '';
+                if (snap.empty) return box.innerHTML = '<div class="empty-msg">لا توجد طلبات سحب معلقة 🎉</div>';
+
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    box.innerHTML += `
+                        <div class="admin-card" id="withdraw-${doc.id}">
+                            <div style="font-weight:800;">المستخدم: ${data.userName} (ID: ${data.userId})</div>
+                            <div style="color:var(--gold-primary); font-weight:900; font-size:1.1rem; margin:4px 0;">المبلغ: ${data.amount.toLocaleString()} ل.س</div>
+                            <div style="font-size:0.85rem; color:var(--text-muted);">الوسيلة: ${data.method} | الحساب: ${data.account}</div>
+                            <div class="btn-group">
+                                <button class="btn-action btn-success" onclick="processWithdrawal('${doc.id}', '${data.userId}', ${data.amount}, true)">موافقة وتحويل ✅</button>
+                                <button class="btn-action btn-danger" onclick="processWithdrawal('${doc.id}', '${data.userId}', ${data.amount}, false)">رفض وإعادة الرصيد ❌</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        async function processWithdrawal(withdrawId, userId, amount, isApproved) {
+            try {
+                if (isApproved) {
+                    await db.collection('admin_withdrawals').doc(withdrawId).update({ status: 'approved' });
+                } else {
+                    await db.runTransaction(async (tr) => {
+                        const userRef = db.collection('users').doc(String(userId));
+                        const uDoc = await tr.get(userRef);
+                        tr.update(userRef, { balance: (uDoc.data().balance || 0) + amount });
+                        tr.update(db.collection('admin_withdrawals').doc(withdrawId), { status: 'rejected' });
+                    });
+                }
+                showAlert('تمت معالجة الطلب بنجاح وتحديث السجل ✅');
+            } catch (e) {
+                showAlert('حدث خطأ: ' + e);
+            }
+        }
+
+        // 3. Technical Support
+        function loadOpenSupport() {
+            db.collection('admin_support').where('status', '==', 'open').onSnapshot(snap => {
+                const box = document.getElementById('container-support');
+                box.innerHTML = '';
+                if (snap.empty) return box.innerHTML = '<div class="empty-msg">لا توجد رسائل دعم مفتوحة 🎉</div>';
+
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    box.innerHTML += `
+                        <div class="admin-card" id="support-${doc.id}">
+                            <div style="font-weight:800;">المستخدم: ${data.userName} (ID: ${data.userId})</div>
+                            <div style="background:rgba(0,0,0,0.4); padding:10px; border-radius:8px; margin:8px 0; font-size:0.85rem;">"${data.message}"</div>
+                            <div class="form-group">
+                                <input type="text" id="reply-${doc.id}" class="form-input" placeholder="اكتب الرد هنا...">
+                            </div>
+                            <button class="btn-action" onclick="replySupport('${doc.id}')">إرسال الرد وإغلاق التذكرة 📩</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        async function replySupport(ticketId) {
+            const replyText = document.getElementById(`reply-${ticketId}`).value.trim();
+            if (!replyText) return showAlert('يرجى كتابة نص الرد!');
+
+            try {
+                await db.collection('admin_support').doc(ticketId).update({
+                    reply: replyText,
+                    status: 'closed',
+                    replyTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                showAlert('تم إرسال الرد واختفاء الشكوى بنجاح ✅');
+            } catch (e) {
+                showAlert('فشل إرسال الرد: ' + e);
+            }
+        }
+
+        // 4. Tasks Creation & Management
+        async function createNewTask() {
+            const title = document.getElementById('task-in-title').value.trim();
+            const link = document.getElementById('task-in-link').value.trim();
+            const reward = parseInt(document.getElementById('task-in-reward').value);
+            const seats = parseInt(document.getElementById('task-in-seats').value);
+
+            if (!title || !link || isNaN(reward) || isNaN(seats)) return showAlert('يرجى إدخال جميع بيانات المهمة بشكل صحيح!');
+
+            try {
+                await db.collection('tasks').add({
+                    title: title,
+                    link: link,
+                    reward: reward,
+                    totalSeats: seats,
+                    claimedSeats: 0,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                document.getElementById('task-in-title').value = '';
+                document.getElementById('task-in-link').value = '';
+                document.getElementById('task-in-reward').value = '';
+                document.getElementById('task-in-seats').value = '';
+                showAlert('تم نشر المهمة بنجاح وتفعيلها في تطبيق المستخدمين 🚀');
+            } catch (e) {
+                showAlert('فشل إضافة المهمة: ' + e);
+            }
+        }
+
+        function loadManageableTasks() {
+            db.collection('tasks').onSnapshot(snap => {
+                const box = document.getElementById('container-tasks-manage');
+                box.innerHTML = '';
+                if (snap.empty) return box.innerHTML = '<div class="empty-msg">لا توجد مهام حالية في النظام</div>';
+
+                snap.forEach(doc => {
+                    const t = doc.data();
+                    box.innerHTML += `
+                        <div class="admin-card">
+                            <div style="font-weight:900; color:var(--gold-primary);">${t.title}</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted); margin:4px 0;">المكافأة: ${t.reward} ل.س | المقاعد: ${t.claimedSeats} / ${t.totalSeats}</div>
+                            <button class="btn-action btn-danger" style="margin-top:8px;" onclick="deleteTask('${doc.id}')">حذف المهمة نهائياً 🗑️</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        async function deleteTask(taskId) {
+            if (confirm('هل أنت تأكد من رغبتك بحذف هذه المهمة نهائياً؟')) {
+                await db.collection('tasks').doc(taskId).delete();
+                showAlert('تم حذف المهمة بنجاح ✅');
+            }
+        }
+
+        // 5. Promo Code
+        async function createNewPromoCode() {
+            const code = document.getElementById('promo-in-code').value.trim().toUpperCase();
+            const reward = parseInt(document.getElementById('promo-in-reward').value);
+            const uses = parseInt(document.getElementById('promo-in-uses').value);
+
+            if (!code || isNaN(reward) || isNaN(uses)) return showAlert('أدخل جميع بيانات البرومو كود بشكل صحيح!');
+
+            try {
+                await db.collection('promo_codes').doc(code).set({
+                    reward: reward,
+                    maxUses: uses,
+                    usedCount: 0,
+                    status: 'active',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                document.getElementById('promo-in-code').value = '';
+                document.getElementById('promo-in-reward').value = '';
+                document.getElementById('promo-in-uses').value = '';
+                showAlert('تم إنشاء البرومو كود بنجاح 🎁');
+            } catch (e) {
+                showAlert('فشل إنشاء الكود: ' + e);
+            }
+        }
+
+        function loadActivePromos() {
+            db.collection('promo_codes').onSnapshot(snap => {
+                const box = document.getElementById('container-promos-list');
+                box.innerHTML = '';
+                snap.forEach(doc => {
+                    const p = doc.data();
+                    box.innerHTML += `
+                        <div class="admin-card" style="padding:12px;">
+                            <div style="font-weight:900; color:var(--gold-primary);">${doc.id}</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">المكافأة: ${p.reward} ل.س | الاستخدامات: ${p.usedCount} / ${p.maxUses} | الحالة: ${p.status}</div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // 6. User Inspection & Anti-Cheat
+        async function inspectUserAccount() {
+            const userId = document.getElementById('inspect-in-id').value.trim();
+            const box = document.getElementById('container-inspect-result');
+            if (!userId) return showAlert('أدخل ID المستخدم أولاً!');
+
+            box.innerHTML = '<div style="text-align:center; padding:15px;">جارِ الفحص...</div>';
+
+            try {
+                const doc = await db.collection('users').doc(userId).get();
+                if (!doc.exists) return box.innerHTML = '<div class="empty-msg">المستخدم غير موجود في قاعدة البيانات!</div>';
+
+                const u = doc.data();
+                box.innerHTML = `
+                    <div class="admin-card">
+                        <div style="font-weight:900; color:var(--gold-primary); font-size:1.1rem;">${u.name}</div>
+                        <div style="font-size:0.85rem; margin-top:6px;">
+                            • ID: ${u.userId}<br>
+                            • الرصيد الحالي: ${(u.balance || 0).toLocaleString()} ل.س<br>
+                            • عدد الإحالات: ${u.referralCount || 0}<br>
+                            • أرباح الإحالات: ${(u.referralEarnings || 0).toLocaleString()} ل.س<br>
+                            • المهام المنفذة: ${(u.completedTasks || []).length}<br>
+                            • آخر تحقق كابتشا: ${u.lastCaptchaTime ? new Date(u.lastCaptchaTime).toLocaleString('ar-SY') : 'لم يتجاوزها بعد'}
+                        </div>
+                        <div class="btn-group" style="margin-top:12px;">
+                            <button class="btn-action btn-danger" onclick="zeroUserBalance('${u.userId}')">تصفير الرصيد 🛑</button>
+                        </div>
                     </div>
-                </div>
-            `;
-        });
-        container.innerHTML = html;
-    });
-
-    async function handleWithdraw(withdrawId, userId, amount, approve) {
-        if (approve) {
-            await db.ref(`withdrawals/${withdrawId}/status`).set('approved');
-            alert('✅ تم تأكيد السحب بنجاح!');
-        } else {
-            const uSnap = await db.ref(`users/${userId}/balance`).once('value');
-            const currentBal = uSnap.val() || 0;
-            await db.ref(`users/${userId}/balance`).set(currentBal + amount);
-            await db.ref(`withdrawals/${withdrawId}/status`).set('rejected');
-            alert('❌ تم رفض السحب وإعادة الرصيد للمستخدم!');
-        }
-    }
-
-    // 🎁 إضافة كود ترويجي
-    async function addPromoCode() {
-        const code = document.getElementById('promo-code').value.trim();
-        const points = parseInt(document.getElementById('promo-points').value);
-        const seats = parseInt(document.getElementById('promo-seats').value);
-
-        if (!code || !points || !seats) return alert('يرجى كتابة كافة البيانات');
-
-        await db.ref(`promos/${code}`).set({
-            points: points,
-            maxSeats: seats,
-            usedSeats: 0
-        });
-
-        alert('✅ تم إنشاء الكود الترويجي بنجاح!');
-    }
-
-    // 🚫 حظر / إلغاء حظر
-    async function toggleBan(isBan) {
-        const userId = document.getElementById('ban-user-id').value.trim();
-        if (!userId) return alert('أدخل ID المستخدم');
-
-        const banTime = isBan ? Date.now() + (365 * 24 * 60 * 60 * 1000) : 0;
-        await db.ref(`users/${userId}/bannedUntil`).set(banTime);
-
-        alert(isBan ? '🚫 تم حظر المستخدم!' : '✅ تم إلغاء حظر المستخدم!');
-    }
-
-    // 💬 مراقبة الدعم
-    db.ref('support').orderByChild('status').equalTo('pending').on('value', (snapshot) => {
-        const container = document.getElementById('support-container');
-        const data = snapshot.val();
-
-        if (!data) {
-            container.innerHTML = '<div style="color:#94a3b8;">لا توجد رسائل دعم معلقة.</div>';
-            return;
+                `;
+            } catch (e) {
+                showAlert('حدث خطأ أثناء الفحص: ' + e);
+            }
         }
 
-        let html = '';
-        Object.keys(data).forEach(id => {
-            const msg = data[id];
-            html += `
-                <div style="background:#0b1120; padding:12px; border-radius:8px; border:1px solid #334155;">
-                    <div><strong>المستخدم:</strong> ${msg.userId}</div>
-                    <div style="margin:5px 0;"><strong>الرسالة:</strong> ${msg.message}</div>
-                    <input type="text" id="reply-${id}" class="form-control" placeholder="اكتب ردك هنا...">
-                    <button class="btn btn-success" style="width:100%;" onclick="sendSupportReply('${id}')">إرسال الرد</button>
-                </div>
-            `;
-        });
-        container.innerHTML = html;
-    });
+        async function zeroUserBalance(userId) {
+            if (confirm('هل أنت تأكد من صفر رصيد هذا المستخدم بسبب الغش؟')) {
+                await db.collection('users').doc(String(userId)).update({ balance: 0 });
+                showAlert('تم تصفير رصيد المستخدم بنجاح 🛑');
+                inspectUserAccount();
+            }
+        }
 
-    async function sendSupportReply(id) {
-        const replyText = document.getElementById(`reply-${id}`).value.trim();
-        if (!replyText) return alert('اكتب الرد أولاً');
+        // 7. Balance Adjustment
+        async function modifyUserBalance(type) {
+            const userId = document.getElementById('bal-in-id').value.trim();
+            const amount = parseInt(document.getElementById('bal-in-amt').value);
 
-        await db.ref(`support/${id}`).update({
-            reply: replyText,
-            status: 'replied'
-        });
+            if (!userId || isNaN(amount) || amount <= 0) return showAlert('يرجى إدخال البيانات بشكل صحيح!');
 
-        alert('✅ تم إرسال الرد بنجاح!');
-    }
-</script>
+            try {
+                const userRef = db.collection('users').doc(userId);
+                await db.runTransaction(async (tr) => {
+                    const uDoc = await tr.get(userRef);
+                    if (!uDoc.exists) throw "المستخدم غير موجود!";
+                    const currentBal = uDoc.data().balance || 0;
+                    const newBal = type === 'add' ? currentBal + amount : Math.max(0, currentBal - amount);
+                    tr.update(userRef, { balance: newBal });
+                });
+
+                document.getElementById('bal-in-amt').value = '';
+                showAlert('تم تعديل رصيد المستخدم بنجاح ✅');
+            } catch (e) {
+                showAlert('فشلت العملية: ' + e);
+            }
+        }
+
+        // 8. System Settings
+        function saveSystemConfig() {
+            const minWithdraw = parseInt(document.getElementById('cfg-min-withdraw').value);
+            const refReward = parseInt(document.getElementById('cfg-ref-reward').value);
+
+            db.collection('system_config').doc('main').set({
+                minWithdraw: minWithdraw,
+                referralReward: refReward
+            }, { merge: true }).then(() => {
+                showAlert('تم حفظ إعدادات النظام بنجاح ⚙️');
+            });
+        }
+    </script>
 </body>
 </html>
