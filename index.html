@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>لوحة إدارة BOT SYRIA</title>
     
-    <!-- Firebase SDK (Compat Version) -->
+    <!-- Firebase SDK (Compat Versions) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,8 +33,7 @@
 
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             font-family: 'Cairo', sans-serif;
             user-select: none;
         }
@@ -51,9 +51,7 @@
             top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000000;
             z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             padding: 20px;
         }
 
@@ -62,88 +60,46 @@
             border: 2px solid var(--gold-primary);
             border-radius: var(--radius-lg);
             padding: 30px 24px;
-            width: 100%;
-            max-width: 380px;
+            width: 100%; max-width: 380px;
             text-align: center;
             box-shadow: 0 0 30px var(--gold-glow);
         }
 
-        .auth-title {
-            font-size: 1.4rem;
-            font-weight: 900;
-            color: var(--gold-primary);
-            margin-bottom: 8px;
-        }
+        .auth-title { font-size: 1.4rem; font-weight: 900; color: var(--gold-primary); margin-bottom: 8px; }
+        .auth-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
 
-        .auth-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        /* Layout Architecture */
         .admin-header {
             background: var(--card-bg);
             border-bottom: 1px solid rgba(255, 183, 0, 0.2);
             padding: 16px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(10px);
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px);
         }
 
-        .admin-title {
-            font-size: 1.2rem;
-            font-weight: 900;
-            color: var(--gold-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .admin-title { font-size: 1.2rem; font-weight: 900; color: var(--gold-primary); display: flex; align-items: center; gap: 8px; }
 
         .nav-scroll {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 12px 16px;
-            background: rgba(0, 0, 0, 0.5);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; gap: 8px; overflow-x: auto; padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.5); border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             white-space: nowrap;
         }
 
         .nav-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 183, 0, 0.2);
-            color: var(--text-muted);
-            padding: 8px 14px;
-            border-radius: var(--radius-md);
-            font-size: 0.85rem;
-            font-weight: 800;
-            cursor: pointer;
-            transition: var(--transition);
+            color: var(--text-muted); padding: 8px 14px;
+            border-radius: var(--radius-md); font-size: 0.85rem;
+            font-weight: 800; cursor: pointer; transition: var(--transition);
         }
 
         .nav-btn.active {
-            background: var(--gold-primary);
-            color: #000;
-            border-color: var(--gold-primary);
-            box-shadow: 0 0 12px var(--gold-glow);
+            background: var(--gold-primary); color: #000;
+            border-color: var(--gold-primary); box-shadow: 0 0 12px var(--gold-glow);
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 16px;
-        }
+        .container { max-width: 800px; margin: 0 auto; padding: 16px; }
 
-        .page-panel {
-            display: none;
-            animation: fadeIn 0.25s ease-in-out;
-        }
-
+        .page-panel { display: none; animation: fadeIn 0.25s ease-in-out; }
         .page-panel.active { display: block; }
 
         @keyframes fadeIn {
@@ -151,64 +107,34 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Card & UI Controls */
         .admin-card {
             background: var(--card-bg);
             border: 1px solid rgba(255, 183, 0, 0.2);
             border-radius: var(--radius-md);
-            padding: 18px;
-            margin-bottom: 14px;
+            padding: 18px; margin-bottom: 14px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
         .card-header-title {
-            font-weight: 900;
-            font-size: 1.05rem;
-            color: var(--gold-primary);
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            font-weight: 900; font-size: 1.05rem; color: var(--gold-primary);
+            margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
         }
 
-        .form-group {
-            margin-bottom: 12px;
-            text-align: right;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
+        .form-group { margin-bottom: 12px; text-align: right; }
+        .form-label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
 
         .form-input, .form-textarea, .form-select {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 183, 0, 0.3);
-            padding: 10px 12px;
-            border-radius: 10px;
-            color: var(--text-main);
-            font-size: 0.9rem;
-            outline: none;
+            width: 100%; background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 183, 0, 0.3); padding: 10px 12px;
+            border-radius: 10px; color: var(--text-main); font-size: 0.9rem; outline: none;
         }
 
-        .form-input:focus, .form-textarea:focus {
-            border-color: var(--gold-primary);
-        }
+        .form-input:focus, .form-textarea:focus { border-color: var(--gold-primary); }
 
         .btn-action {
             background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
-            color: #000;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-weight: 900;
-            font-size: 0.9rem;
-            cursor: pointer;
-            width: 100%;
+            color: #000; border: none; padding: 10px 16px; border-radius: 10px;
+            font-weight: 900; font-size: 0.9rem; cursor: pointer; width: 100%;
             transition: var(--transition);
         }
 
@@ -216,58 +142,32 @@
         .btn-danger { background: var(--danger); color: #fff; }
         .btn-success { background: var(--success); color: #000; }
 
-        .btn-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
+        .btn-group { display: flex; gap: 8px; margin-top: 10px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 
         .stat-box {
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 183, 0, 0.2);
-            padding: 14px;
-            border-radius: var(--radius-md);
-            text-align: center;
+            padding: 14px; border-radius: var(--radius-md); text-align: center;
         }
 
         .stat-val { font-size: 1.5rem; font-weight: 900; color: var(--gold-primary); }
         .stat-lbl { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
 
-        .empty-msg {
-            text-align: center;
-            color: var(--text-muted);
-            padding: 30px 10px;
-            font-size: 0.9rem;
-        }
+        .empty-msg { text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 0.9rem; }
 
-        /* Modal Alert */
         .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.85);
-            z-index: 10001;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.85); z-index: 10001; display: none;
+            align-items: center; justify-content: center; padding: 20px;
         }
 
         .modal-overlay.active { display: flex; }
 
         .modal-body {
-            background: #11131a;
-            border: 1px solid var(--gold-primary);
-            border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 360px;
-            padding: 20px;
-            text-align: center;
+            background: #11131a; border: 1px solid var(--gold-primary);
+            border-radius: var(--radius-lg); width: 100%; max-width: 360px;
+            padding: 20px; text-align: center;
         }
     </style>
 </head>
@@ -463,22 +363,37 @@
     <script>
         const ADMIN_PASS = "201063";
 
-        // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "YOUR_FIREBASE_API_KEY",
-            authDomain: "bot-syria.firebaseapp.com",
-            projectId: "bot-syria",
-            storageBucket: "bot-syria.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef"
+          apiKey: "AIzaSyD4EFPpYoKA0z-Jh5EaT-JmyJP-tAJKP9M",
+          authDomain: "bot-syria.firebaseapp.com",
+          databaseURL: "https://bot-syria-default-rtdb.firebaseio.com",
+          projectId: "bot-syria",
+          storageBucket: "bot-syria.firebasestorage.app",
+          messagingSenderId: "865938637842",
+          appId: "1:865938637842:web:0a6040b189eb34d55084cb",
+          measurementId: "G-ZPL146P3C7"
         };
 
         let db = null;
         try {
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
+            if (typeof firebase.analytics === 'function') {
+                firebase.analytics();
+            }
         } catch (e) {
             console.error("Firebase Initialization Error:", e);
+        }
+
+        function sanitizeString(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;')
+                .trim();
         }
 
         function checkAdminPassword() {
@@ -508,25 +423,22 @@
             btn.classList.add('active');
         }
 
-        // Realtime Database Watchers
         function initRealtimeListeners() {
             if (!db) return;
 
-            // Stats Counters
             db.collection('users').onSnapshot(snap => document.getElementById('st-users').innerText = snap.size);
             db.collection('admin_withdrawals').where('status', '==', 'pending').onSnapshot(snap => document.getElementById('st-withdraws').innerText = snap.size);
             db.collection('admin_proofs').where('status', '==', 'pending').onSnapshot(snap => document.getElementById('st-proofs').innerText = snap.size);
             db.collection('admin_support').where('status', '==', 'open').onSnapshot(snap => document.getElementById('st-support').innerText = snap.size);
 
-            // Listeners for pending items
             loadPendingProofs();
             loadPendingWithdrawals();
             loadOpenSupport();
             loadManageableTasks();
             loadActivePromos();
+            loadSystemConfigValues();
         }
 
-        // 1. Proofs Management
         function loadPendingProofs() {
             db.collection('admin_proofs').where('status', '==', 'pending').onSnapshot(snap => {
                 const box = document.getElementById('container-proofs');
@@ -537,9 +449,9 @@
                     const data = doc.data();
                     box.innerHTML += `
                         <div class="admin-card" id="proof-${doc.id}">
-                            <div style="font-weight:800; font-size:0.9rem;">المستخدم: ${data.userName} (ID: ${data.userId})</div>
-                            <div style="color:var(--gold-primary); font-weight:800; margin:4px 0;">المهمة: ${data.taskTitle}</div>
-                            <div style="font-size:0.85rem; background:rgba(0,0,0,0.4); padding:8px; border-radius:8px; margin:8px 0;">${data.proofText}</div>
+                            <div style="font-weight:800; font-size:0.9rem;">المستخدم: ${sanitizeString(data.userName)} (ID: ${data.userId})</div>
+                            <div style="color:var(--gold-primary); font-weight:800; margin:4px 0;">المهمة: ${sanitizeString(data.taskTitle)}</div>
+                            <div style="font-size:0.85rem; background:rgba(0,0,0,0.4); padding:8px; border-radius:8px; margin:8px 0;">${sanitizeString(data.proofText)}</div>
                             <div class="btn-group">
                                 <button class="btn-action btn-success" onclick="processProof('${doc.id}', '${data.userId}', '${data.taskId}', true)">قبول وإضافة المكافأة ✅</button>
                                 <button class="btn-action btn-danger" onclick="processProof('${doc.id}', '${data.userId}', '${data.taskId}', false)">رفض الإثبات ❌</button>
@@ -581,7 +493,6 @@
             }
         }
 
-        // 2. Withdrawals Management
         function loadPendingWithdrawals() {
             db.collection('admin_withdrawals').where('status', '==', 'pending').onSnapshot(snap => {
                 const box = document.getElementById('container-withdraws');
@@ -592,9 +503,9 @@
                     const data = doc.data();
                     box.innerHTML += `
                         <div class="admin-card" id="withdraw-${doc.id}">
-                            <div style="font-weight:800;">المستخدم: ${data.userName} (ID: ${data.userId})</div>
+                            <div style="font-weight:800;">المستخدم: ${sanitizeString(data.userName)} (ID: ${data.userId})</div>
                             <div style="color:var(--gold-primary); font-weight:900; font-size:1.1rem; margin:4px 0;">المبلغ: ${data.amount.toLocaleString()} ل.س</div>
-                            <div style="font-size:0.85rem; color:var(--text-muted);">الوسيلة: ${data.method} | الحساب: ${data.account}</div>
+                            <div style="font-size:0.85rem; color:var(--text-muted);">الوسيلة: ${sanitizeString(data.method)} | الحساب: ${sanitizeString(data.account)}</div>
                             <div class="btn-group">
                                 <button class="btn-action btn-success" onclick="processWithdrawal('${doc.id}', '${data.userId}', ${data.amount}, true)">موافقة وتحويل ✅</button>
                                 <button class="btn-action btn-danger" onclick="processWithdrawal('${doc.id}', '${data.userId}', ${data.amount}, false)">رفض وإعادة الرصيد ❌</button>
@@ -623,7 +534,6 @@
             }
         }
 
-        // 3. Technical Support
         function loadOpenSupport() {
             db.collection('admin_support').where('status', '==', 'open').onSnapshot(snap => {
                 const box = document.getElementById('container-support');
@@ -634,8 +544,8 @@
                     const data = doc.data();
                     box.innerHTML += `
                         <div class="admin-card" id="support-${doc.id}">
-                            <div style="font-weight:800;">المستخدم: ${data.userName} (ID: ${data.userId})</div>
-                            <div style="background:rgba(0,0,0,0.4); padding:10px; border-radius:8px; margin:8px 0; font-size:0.85rem;">"${data.message}"</div>
+                            <div style="font-weight:800;">المستخدم: ${sanitizeString(data.userName)} (ID: ${data.userId})</div>
+                            <div style="background:rgba(0,0,0,0.4); padding:10px; border-radius:8px; margin:8px 0; font-size:0.85rem;">"${sanitizeString(data.message)}"</div>
                             <div class="form-group">
                                 <input type="text" id="reply-${doc.id}" class="form-input" placeholder="اكتب الرد هنا...">
                             </div>
@@ -647,7 +557,7 @@
         }
 
         async function replySupport(ticketId) {
-            const replyText = document.getElementById(`reply-${ticketId}`).value.trim();
+            const replyText = sanitizeString(document.getElementById(`reply-${ticketId}`).value);
             if (!replyText) return showAlert('يرجى كتابة نص الرد!');
 
             try {
@@ -662,14 +572,15 @@
             }
         }
 
-        // 4. Tasks Creation & Management
         async function createNewTask() {
-            const title = document.getElementById('task-in-title').value.trim();
-            const link = document.getElementById('task-in-link').value.trim();
+            const title = sanitizeString(document.getElementById('task-in-title').value);
+            const link = sanitizeString(document.getElementById('task-in-link').value);
             const reward = parseInt(document.getElementById('task-in-reward').value);
             const seats = parseInt(document.getElementById('task-in-seats').value);
 
-            if (!title || !link || isNaN(reward) || isNaN(seats)) return showAlert('يرجى إدخال جميع بيانات المهمة بشكل صحيح!');
+            if (!title || !link || isNaN(reward) || isNaN(seats) || reward <= 0 || seats <= 0) {
+                return showAlert('يرجى إدخال جميع بيانات المهمة بشكل صحيح!');
+            }
 
             try {
                 await db.collection('tasks').add({
@@ -701,7 +612,7 @@
                     const t = doc.data();
                     box.innerHTML += `
                         <div class="admin-card">
-                            <div style="font-weight:900; color:var(--gold-primary);">${t.title}</div>
+                            <div style="font-weight:900; color:var(--gold-primary);">${sanitizeString(t.title)}</div>
                             <div style="font-size:0.8rem; color:var(--text-muted); margin:4px 0;">المكافأة: ${t.reward} ل.س | المقاعد: ${t.claimedSeats} / ${t.totalSeats}</div>
                             <button class="btn-action btn-danger" style="margin-top:8px;" onclick="deleteTask('${doc.id}')">حذف المهمة نهائياً 🗑️</button>
                         </div>
@@ -717,28 +628,32 @@
             }
         }
 
-        // 5. Promo Code
+        // إكمال التابع المقطوع لإنشاء كود البرومو وترقيم الأكواد
         async function createNewPromoCode() {
-            const code = document.getElementById('promo-in-code').value.trim().toUpperCase();
+            const code = sanitizeString(document.getElementById('promo-in-code').value).toUpperCase();
             const reward = parseInt(document.getElementById('promo-in-reward').value);
             const uses = parseInt(document.getElementById('promo-in-uses').value);
 
-            if (!code || isNaN(reward) || isNaN(uses)) return showAlert('أدخل جميع بيانات البرومو كود بشكل صحيح!');
+            if (!code || isNaN(reward) || isNaN(uses) || reward <= 0 || uses <= 0) {
+                return showAlert('يرجى إدخال كافة بيانات الكود الترويجي بشكل صحيح!');
+            }
 
             try {
                 await db.collection('promo_codes').doc(code).set({
+                    code: code,
                     reward: reward,
                     maxUses: uses,
                     usedCount: 0,
                     status: 'active',
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
+
                 document.getElementById('promo-in-code').value = '';
                 document.getElementById('promo-in-reward').value = '';
                 document.getElementById('promo-in-uses').value = '';
-                showAlert('تم إنشاء البرومو كود بنجاح 🎁');
+                showAlert('تم إنشاء كود البرومو وتفعيله بنجاح 🎁');
             } catch (e) {
-                showAlert('فشل إنشاء الكود: ' + e);
+                showAlert('حدث خطأ أثناء الإنشاء: ' + e);
             }
         }
 
@@ -746,45 +661,52 @@
             db.collection('promo_codes').onSnapshot(snap => {
                 const box = document.getElementById('container-promos-list');
                 box.innerHTML = '';
+                if (snap.empty) return box.innerHTML = '<div class="empty-msg">لا توجد أكواد برومو حالية</div>';
+
                 snap.forEach(doc => {
                     const p = doc.data();
                     box.innerHTML += `
-                        <div class="admin-card" style="padding:12px;">
-                            <div style="font-weight:900; color:var(--gold-primary);">${doc.id}</div>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">المكافأة: ${p.reward} ل.س | الاستخدامات: ${p.usedCount} / ${p.maxUses} | الحالة: ${p.status}</div>
+                        <div class="admin-card">
+                            <div style="font-weight:900; color:var(--gold-primary); font-size:1.1rem;">${sanitizeString(p.code)}</div>
+                            <div style="font-size:0.85rem; color:var(--text-muted); margin:4px 0;">المكافأة: ${p.reward} ل.س | الاستخدامات: ${p.usedCount || 0} / ${p.maxUses}</div>
+                            <button class="btn-action btn-danger" style="margin-top:8px;" onclick="deletePromoCode('${doc.id}')">حذف الكود 🗑️</button>
                         </div>
                     `;
                 });
             });
         }
 
-        // 6. User Inspection & Anti-Cheat
+        async function deletePromoCode(codeId) {
+            if (confirm('هل ترغب بحذف هذا الكود الترويجي؟')) {
+                await db.collection('promo_codes').doc(codeId).delete();
+                showAlert('تم حذف الكود بنجاح ✅');
+            }
+        }
+
         async function inspectUserAccount() {
             const userId = document.getElementById('inspect-in-id').value.trim();
-            const box = document.getElementById('container-inspect-result');
-            if (!userId) return showAlert('أدخل ID المستخدم أولاً!');
+            const resBox = document.getElementById('container-inspect-result');
+            if (!userId) return showAlert('أدخل معرف التلغرام أولاً!');
 
-            box.innerHTML = '<div style="text-align:center; padding:15px;">جارِ الفحص...</div>';
+            resBox.innerHTML = '<div style="text-align:center; padding:15px; color:var(--gold-primary);">جاري الفحص... 🔎</div>';
 
             try {
-                const doc = await db.collection('users').doc(userId).get();
-                if (!doc.exists) return box.innerHTML = '<div class="empty-msg">المستخدم غير موجود في قاعدة البيانات!</div>';
+                const userDoc = await db.collection('users').doc(userId).get();
+                if (!userDoc.exists) {
+                    resBox.innerHTML = '<div class="admin-card" style="color:var(--danger); text-align:center;">المستخدم غير موجود في النظام! ❌</div>';
+                    return;
+                }
 
-                const u = doc.data();
-                box.innerHTML = `
+                const u = userDoc.data();
+                resBox.innerHTML = `
                     <div class="admin-card">
-                        <div style="font-weight:900; color:var(--gold-primary); font-size:1.1rem;">${u.name}</div>
-                        <div style="font-size:0.85rem; margin-top:6px;">
-                            • ID: ${u.userId}<br>
-                            • الرصيد الحالي: ${(u.balance || 0).toLocaleString()} ل.س<br>
-                            • عدد الإحالات: ${u.referralCount || 0}<br>
-                            • أرباح الإحالات: ${(u.referralEarnings || 0).toLocaleString()} ل.س<br>
-                            • المهام المنفذة: ${(u.completedTasks || []).length}<br>
-                            • آخر تحقق كابتشا: ${u.lastCaptchaTime ? new Date(u.lastCaptchaTime).toLocaleString('ar-SY') : 'لم يتجاوزها بعد'}
-                        </div>
-                        <div class="btn-group" style="margin-top:12px;">
-                            <button class="btn-action btn-danger" onclick="zeroUserBalance('${u.userId}')">تصفير الرصيد 🛑</button>
-                        </div>
+                        <div style="font-weight:900; color:var(--gold-primary); font-size:1.1rem;">بيانات الحساب (ID: ${userId})</div>
+                        <div style="font-size:0.9rem; margin-top:8px;">الاسم: <b>${sanitizeString(u.name)}</b></div>
+                        <div style="font-size:0.9rem;">يوزر التلغرام: <b>@${sanitizeString(u.username || 'بدون')}</b></div>
+                        <div style="font-size:0.9rem; color:var(--gold-primary); font-weight:800; margin-top:4px;">الرصيد الحالي: ${u.balance || 0} ل.س</div>
+                        <div style="font-size:0.9rem;">عدد الإحالات: ${u.referralCount || 0}</div>
+                        <div style="font-size:0.9rem;">أرباح الإحالات: ${u.referralEarnings || 0} ل.س</div>
+                        <div style="font-size:0.85rem; color:var(--text-muted); margin-top:6px;">المهام المكتملة: ${(u.completedTasks || []).length} مهمة</div>
                     </div>
                 `;
             } catch (e) {
@@ -792,49 +714,59 @@
             }
         }
 
-        async function zeroUserBalance(userId) {
-            if (confirm('هل أنت تأكد من صفر رصيد هذا المستخدم بسبب الغش؟')) {
-                await db.collection('users').doc(String(userId)).update({ balance: 0 });
-                showAlert('تم تصفير رصيد المستخدم بنجاح 🛑');
-                inspectUserAccount();
-            }
-        }
-
-        // 7. Balance Adjustment
-        async function modifyUserBalance(type) {
+        async function modifyUserBalance(action) {
             const userId = document.getElementById('bal-in-id').value.trim();
             const amount = parseInt(document.getElementById('bal-in-amt').value);
 
-            if (!userId || isNaN(amount) || amount <= 0) return showAlert('يرجى إدخال البيانات بشكل صحيح!');
+            if (!userId || isNaN(amount) || amount <= 0) return showAlert('أدخل البيانات بشكل صحيح!');
 
             try {
                 const userRef = db.collection('users').doc(userId);
                 await db.runTransaction(async (tr) => {
                     const uDoc = await tr.get(userRef);
                     if (!uDoc.exists) throw "المستخدم غير موجود!";
+                    
                     const currentBal = uDoc.data().balance || 0;
-                    const newBal = type === 'add' ? currentBal + amount : Math.max(0, currentBal - amount);
+                    const newBal = action === 'add' ? currentBal + amount : Math.max(0, currentBal - amount);
+                    
                     tr.update(userRef, { balance: newBal });
                 });
 
+                document.getElementById('bal-in-id').value = '';
                 document.getElementById('bal-in-amt').value = '';
-                showAlert('تم تعديل رصيد المستخدم بنجاح ✅');
+                showAlert(`تم ${action === 'add' ? 'إضافة' : 'خصم'} المبلغ بنجاح ✅`);
             } catch (e) {
                 showAlert('فشلت العملية: ' + e);
             }
         }
 
-        // 8. System Settings
-        function saveSystemConfig() {
-            const minWithdraw = parseInt(document.getElementById('cfg-min-withdraw').value);
-            const refReward = parseInt(document.getElementById('cfg-ref-reward').value);
-
-            db.collection('system_config').doc('main').set({
-                minWithdraw: minWithdraw,
-                referralReward: refReward
-            }, { merge: true }).then(() => {
-                showAlert('تم حفظ إعدادات النظام بنجاح ⚙️');
+        function loadSystemConfigValues() {
+            db.collection('system_config').doc('main').get().then(doc => {
+                if (doc.exists) {
+                    const cfg = doc.data();
+                    document.getElementById('cfg-min-withdraw').value = cfg.minWithdraw || 5000;
+                    document.getElementById('cfg-ref-reward').value = cfg.refReward || 500;
+                }
             });
+        }
+
+        async function saveSystemConfig() {
+            const minW = parseInt(document.getElementById('cfg-min-withdraw').value);
+            const refR = parseInt(document.getElementById('cfg-ref-reward').value);
+
+            if (isNaN(minW) || isNaN(refR) || minW <= 0 || refR <= 0) return showAlert('أدخل قيم صحيحة!');
+
+            try {
+                await db.collection('system_config').doc('main').set({
+                    minWithdraw: minW,
+                    refReward: refR,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                showAlert('تم حفظ الإعدادات العامة بنجاح وتحديث النظام 💾');
+            } catch (e) {
+                showAlert('حدث خطأ أثناء الحفظ: ' + e);
+            }
         }
     </script>
 </body>
